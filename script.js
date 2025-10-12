@@ -1,7 +1,5 @@
-// script.js
-// Authentication state
+// script.js - Frontend Only Version (Works without backend)
 let currentUser = null;
-const API_BASE = window.location.origin + '/api';
 
 // DOM Elements
 const authModal = document.getElementById('auth-modal');
@@ -14,17 +12,34 @@ const mobileAuth = document.getElementById('mobile-auth');
 const mobileUser = document.getElementById('mobile-user');
 const mobileUserEmail = document.getElementById('mobile-user-email');
 
+// Mock user data stored in localStorage
+function initMockUsers() {
+    if (!localStorage.getItem('mockUsers')) {
+        const mockUsers = [
+            {
+                id: 'user_1',
+                email: 'demo@yieldfarm.com',
+                password: 'password123',
+                balance: 15000,
+                totalEarnings: 1250,
+                investments: []
+            }
+        ];
+        localStorage.setItem('mockUsers', JSON.stringify(mockUsers));
+    }
+}
+
 // Show loading state
 function showLoading(button) {
-  const originalText = button.innerHTML;
-  button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Loading...';
-  button.disabled = true;
-  return originalText;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Loading...';
+    button.disabled = true;
+    return originalText;
 }
 
 function hideLoading(button, originalText) {
-  button.innerHTML = originalText;
-  button.disabled = false;
+    button.innerHTML = originalText;
+    button.disabled = false;
 }
 
 // Mobile menu toggle
@@ -94,55 +109,68 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     hideLoading(button, originalText);
 });
 
-// API Functions
-async function apiRequest(endpoint, options = {}) {
-    try {
-        const response = await fetch(`${API_BASE}${endpoint}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers,
-            },
-            ...options,
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('API request failed:', error);
-        return { error: 'Network error - Please try again later' };
-    }
-}
-
+// Mock API Functions (Frontend only)
 async function registerUser(email, password) {
-    const result = await apiRequest('/register', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-    });
+    initMockUsers();
+    const mockUsers = JSON.parse(localStorage.getItem('mockUsers'));
     
-    if (result.success) {
-        return loginUser(email, password);
+    // Check if user already exists
+    const existingUser = mockUsers.find(user => user.email === email);
+    if (existingUser) {
+        return { error: 'User already exists' };
     }
     
-    return result;
+    // Limit to 10 users max
+    if (mockUsers.length >= 10) {
+        return { error: 'Maximum user limit reached (10 users)' };
+    }
+    
+    // Create new user
+    const newUser = {
+        id: 'user_' + Date.now(),
+        email,
+        password, // In real app, this should be hashed
+        createdAt: new Date().toISOString(),
+        balance: 0,
+        totalEarnings: 0,
+        investments: []
+    };
+    
+    mockUsers.push(newUser);
+    localStorage.setItem('mockUsers', JSON.stringify(mockUsers));
+    localStorage.setItem('currentUser', JSON.stringify(newUser));
+    
+    return { 
+        success: true, 
+        user: { 
+            id: newUser.id, 
+            email: newUser.email,
+            balance: newUser.balance
+        }
+    };
 }
 
 async function loginUser(email, password) {
-    const result = await apiRequest('/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-    });
+    initMockUsers();
+    const mockUsers = JSON.parse(localStorage.getItem('mockUsers'));
     
-    if (result.success) {
-        currentUser = result.user;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        return result;
+    const user = mockUsers.find(u => u.email === email && u.password === password);
+    if (!user) {
+        return { error: 'Invalid email or password' };
     }
     
-    return result;
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    
+    return {
+        success: true,
+        user: {
+            id: user.id,
+            email: user.email,
+            balance: user.balance,
+            totalEarnings: user.totalEarnings,
+            investments: user.investments || []
+        }
+    };
 }
 
 function logout() {
@@ -227,8 +255,8 @@ document.getElementById('submit-tx').addEventListener('click', async function() 
     const originalText = showLoading(button);
     
     const txHash = document.getElementById('tx-hash').value;
-    const amount = document.getElementById('amount').value;
-    const lockPeriod = document.getElementById('term').value;
+    const amount = parseFloat(document.getElementById('amount').value);
+    const lockPeriod = parseInt(document.getElementById('term').value);
     const compoundType = document.getElementById('compound').value;
     
     if (txHash.trim() === '') {
@@ -237,33 +265,48 @@ document.getElementById('submit-tx').addEventListener('click', async function() 
         return;
     }
 
-    const result = await apiRequest('/invest', {
-        method: 'POST',
-        body: JSON.stringify({
-            userId: currentUser.id,
-            amount,
-            lockPeriod,
-            compoundType,
-            transactionHash: txHash
-        }),
-    });
+    if (amount < 500 || amount > 1000000) {
+        alert('Amount must be between 500 and 1,000,000 USDT');
+        hideLoading(button, originalText);
+        return;
+    }
+
+    // Mock investment creation
+    const apy = apyFromTerm(lockPeriod);
     
-    if (result.success) {
+    const newInvestment = {
+        id: 'inv_' + Date.now(),
+        amount: amount,
+        lockPeriod: lockPeriod,
+        compoundType: compoundType,
+        apy: apy,
+        transactionHash: txHash,
+        startDate: new Date().toISOString(),
+        status: 'active',
+        totalEarned: 0
+    };
+
+    // Update user data
+    const mockUsers = JSON.parse(localStorage.getItem('mockUsers'));
+    const userIndex = mockUsers.findIndex(u => u.id === currentUser.id);
+    
+    if (userIndex !== -1) {
+        mockUsers[userIndex].balance += amount;
+        if (!mockUsers[userIndex].investments) mockUsers[userIndex].investments = [];
+        mockUsers[userIndex].investments.push(newInvestment);
+        
+        localStorage.setItem('mockUsers', JSON.stringify(mockUsers));
+        localStorage.setItem('currentUser', JSON.stringify(mockUsers[userIndex]));
+        
+        currentUser = mockUsers[userIndex];
+        updateUIForUser();
+        
         document.getElementById('success-message').classList.remove('hidden');
         document.getElementById('tx-hash').value = '';
-        
-        // Update user data
-        currentUser.balance = result.newBalance;
-        if (!currentUser.investments) currentUser.investments = [];
-        currentUser.investments.push(result.investment);
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        updateUIForUser();
         
         setTimeout(() => {
             document.getElementById('success-message').classList.add('hidden');
         }, 5000);
-    } else {
-        alert(result.error || 'Investment failed');
     }
     
     hideLoading(button, originalText);
@@ -294,6 +337,15 @@ function apyFromTerm(months) {
 }
 
 function formatMoney(n) { 
+    if (n > 1000000000) {
+        return (n / 1000000000).toFixed(2) + 'B';
+    }
+    if (n > 1000000) {
+        return (n / 1000000).toFixed(2) + 'M';
+    }
+    if (n > 1000) {
+        return (n / 1000).toFixed(2) + 'K';
+    }
     return Number(n).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}); 
 }
 
@@ -349,6 +401,9 @@ function resetForm() {
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize mock users
+    initMockUsers();
+    
     // Check if user is already logged in
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
@@ -357,4 +412,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     updateUIForUser();
     calc();
+    
+    // Add demo credentials info
+    console.log('Demo Credentials: email: demo@yieldfarm.com, password: password123');
 });
