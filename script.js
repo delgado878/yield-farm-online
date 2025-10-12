@@ -1,13 +1,41 @@
-// script.js - Fixed Backend Connection
+// script.js - Complete working version
 let currentUser = null;
 const API_BASE = window.location.origin + '/api';
 
-console.log('API Base URL:', API_BASE);
+console.log('🚀 YieldFarm Platform Loading...');
+console.log('API Base:', API_BASE);
 
-// DOM Elements
-const authModal = document.getElementById('auth-modal');
-const loginForm = document.getElementById('login-form');
-const registerForm = document.getElementById('register-form');
+// Make functions globally available
+window.showAuthModal = function(type) {
+    const authModal = document.getElementById('auth-modal');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    
+    if (authModal) {
+        authModal.classList.remove('hidden');
+        if (type === 'login') {
+            if (loginForm) loginForm.classList.remove('hidden');
+            if (registerForm) registerForm.classList.add('hidden');
+        } else {
+            if (loginForm) loginForm.classList.add('hidden');
+            if (registerForm) registerForm.classList.remove('hidden');
+        }
+    }
+};
+
+window.hideAuthModal = function() {
+    const authModal = document.getElementById('auth-modal');
+    if (authModal) {
+        authModal.classList.add('hidden');
+    }
+};
+
+window.logout = function() {
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    updateUIForUser();
+    console.log('User logged out');
+};
 
 // Show loading state
 function showLoading(button) {
@@ -23,45 +51,28 @@ function hideLoading(button, originalText) {
 }
 
 // Mobile menu toggle
-document.getElementById('mobile-menu-button').addEventListener('click', function() {
-    const menu = document.getElementById('mobile-menu');
-    menu.classList.toggle('hidden');
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileButton = document.getElementById('mobile-menu-button');
+    if (mobileButton) {
+        mobileButton.addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu) menu.classList.toggle('hidden');
+        });
+    }
 });
 
-// Auth modal functions
-function showAuthModal(type) {
-    if (!authModal) {
-        console.error('Auth modal not found');
-        return;
-    }
-    authModal.classList.remove('hidden');
-    if (type === 'login') {
-        loginForm.classList.remove('hidden');
-        registerForm.classList.add('hidden');
-    } else {
-        loginForm.classList.add('hidden');
-        registerForm.classList.remove('hidden');
-    }
-}
-
-function hideAuthModal() {
-    if (authModal) {
-        authModal.classList.add('hidden');
-    }
-}
-
 // Close modal when clicking outside
-if (authModal) {
-    authModal.addEventListener('click', function(e) {
-        if (e.target === authModal) {
-            hideAuthModal();
-        }
-    });
-}
+document.addEventListener('click', function(e) {
+    const authModal = document.getElementById('auth-modal');
+    if (authModal && e.target === authModal) {
+        hideAuthModal();
+    }
+});
 
 // Login form submission
-if (document.getElementById('loginForm')) {
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+const loginForm = document.getElementById('loginForm');
+if (loginForm) {
+    loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const button = this.querySelector('button[type="submit"]');
         const originalText = showLoading(button);
@@ -82,8 +93,9 @@ if (document.getElementById('loginForm')) {
 }
 
 // Register form submission
-if (document.getElementById('registerForm')) {
-    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+const registerForm = document.getElementById('registerForm');
+if (registerForm) {
+    registerForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const button = this.querySelector('button[type="submit"]');
         const originalText = showLoading(button);
@@ -106,7 +118,7 @@ if (document.getElementById('registerForm')) {
 // Real API Functions
 async function apiRequest(endpoint, options = {}) {
     try {
-        console.log('API Request:', `${API_BASE}${endpoint}`);
+        console.log('📡 API Request:', `${API_BASE}${endpoint}`);
         const response = await fetch(`${API_BASE}${endpoint}`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -120,10 +132,10 @@ async function apiRequest(endpoint, options = {}) {
         }
         
         const data = await response.json();
-        console.log('API Response:', data);
+        console.log('✅ API Response:', data);
         return data;
     } catch (error) {
-        console.error('API request failed:', error);
+        console.error('❌ API request failed:', error);
         return { error: 'Network error - Please try again' };
     }
 }
@@ -150,18 +162,11 @@ async function loginUser(email, password) {
     if (result.success) {
         currentUser = result.user;
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        console.log('Login successful:', currentUser.email);
+        console.log('✅ Login successful:', currentUser.email);
         return result;
     }
     
     return result;
-}
-
-function logout() {
-    currentUser = null;
-    localStorage.removeItem('currentUser');
-    updateUIForUser();
-    console.log('User logged out');
 }
 
 function updateUIForUser() {
@@ -184,7 +189,7 @@ function updateUIForUser() {
         
         // Update dashboard
         updateDashboardNumbers(currentUser);
-        console.log('UI updated for logged in user');
+        console.log('✅ UI updated for logged in user');
     } else {
         // User is not logged in
         if (authButtons) authButtons.classList.remove('hidden');
@@ -202,7 +207,7 @@ function updateUIForUser() {
         if (investmentsDisplay) investmentsDisplay.textContent = '0';
         if (earningsDisplay) earningsDisplay.textContent = '0.00 USDT';
         
-        console.log('UI updated for logged out user');
+        console.log('✅ UI updated for logged out user');
     }
 }
 
@@ -215,110 +220,6 @@ function updateDashboardNumbers(user) {
     if (earningsDisplay) earningsDisplay.textContent = user.totalEarnings.toFixed(2) + ' USDT';
     if (investmentsDisplay) investmentsDisplay.textContent = user.investments ? user.investments.length : '0';
 }
-
-// Make functions globally available
-window.showAuthModal = showAuthModal;
-window.hideAuthModal = hideAuthModal;
-window.logout = logout;
-window.calc = calc;
-window.resetForm = resetForm;
-
-// Investment calculator functions
-document.getElementById('calculate-btn').addEventListener('click', calc);
-document.getElementById('reset-btn').addEventListener('click', resetForm);
-document.getElementById('term').addEventListener('input', function() {
-    document.getElementById('termValue').textContent = this.value;
-    document.getElementById('selected-term').value = this.value + ' months';
-});
-
-// Update selected amount when input changes
-document.getElementById('amount').addEventListener('input', function() {
-    document.getElementById('selected-amount').value = this.value + ' USDT';
-});
-
-// Initialize selected values
-document.getElementById('selected-amount').value = document.getElementById('amount').value + ' USDT';
-document.getElementById('selected-term').value = document.getElementById('term').value + ' months';
-
-// Copy wallet address
-document.getElementById('copy-address').addEventListener('click', function() {
-    const address = document.getElementById('wallet-address');
-    address.select();
-    document.execCommand('copy');
-    
-    // Visual feedback
-    const originalText = this.textContent;
-    this.textContent = 'Copied!';
-    setTimeout(() => {
-        this.textContent = originalText;
-    }, 2000);
-});
-
-// Submit transaction
-document.getElementById('submit-tx').addEventListener('click', async function() {
-    if (!currentUser) {
-        alert('Please login first');
-        return;
-    }
-    
-    const button = this;
-    const originalText = showLoading(button);
-    
-    const txHash = document.getElementById('tx-hash').value;
-    const amount = document.getElementById('amount').value;
-    const lockPeriod = document.getElementById('term').value;
-    const compoundType = document.getElementById('compound').value;
-    
-    if (txHash.trim() === '') {
-        alert('Please enter your transaction hash');
-        hideLoading(button, originalText);
-        return;
-    }
-
-    console.log('Creating investment for user:', currentUser.id);
-    const result = await apiRequest('/invest', {
-        method: 'POST',
-        body: JSON.stringify({
-            userId: currentUser.id,
-            amount,
-            lockPeriod,
-            compoundType,
-            transactionHash: txHash
-        }),
-    });
-    
-    if (result.success) {
-        document.getElementById('success-message').classList.remove('hidden');
-        document.getElementById('tx-hash').value = '';
-        
-        // Update user data
-        currentUser.balance = result.newBalance;
-        if (!currentUser.investments) currentUser.investments = [];
-        currentUser.investments.push(result.investment);
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        updateUIForUser();
-        
-        setTimeout(() => {
-            document.getElementById('success-message').classList.add('hidden');
-        }, 5000);
-    } else {
-        alert(result.error || 'Investment failed');
-    }
-    
-    hideLoading(button, originalText);
-});
-
-// FAQ toggle
-document.querySelectorAll('.faq-question').forEach(button => {
-    button.addEventListener('click', () => {
-        const answer = button.nextElementSibling;
-        const icon = button.querySelector('i');
-        
-        answer.classList.toggle('hidden');
-        icon.classList.toggle('fa-chevron-down');
-        icon.classList.toggle('fa-chevron-up');
-    });
-});
 
 // Calculator functions - YOUR EXACT FORMULA
 function clamp(v, a, b) { return Math.min(Math.max(v, a), b); }
@@ -384,6 +285,8 @@ function calc() {
     `;
 }
 
+window.calc = calc;
+
 function resetForm() {
     document.getElementById('amount').value = 5000;
     document.getElementById('term').value = 12;
@@ -395,15 +298,151 @@ function resetForm() {
     calc();
 }
 
+window.resetForm = resetForm;
+
+// Investment calculator functions
+document.addEventListener('DOMContentLoaded', function() {
+    // Calculator buttons
+    const calculateBtn = document.getElementById('calculate-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    
+    if (calculateBtn) calculateBtn.addEventListener('click', calc);
+    if (resetBtn) resetBtn.addEventListener('click', resetForm);
+    
+    // Term slider
+    const termSlider = document.getElementById('term');
+    if (termSlider) {
+        termSlider.addEventListener('input', function() {
+            const termValue = document.getElementById('termValue');
+            const selectedTerm = document.getElementById('selected-term');
+            if (termValue) termValue.textContent = this.value;
+            if (selectedTerm) selectedTerm.value = this.value + ' months';
+        });
+    }
+    
+    // Amount input
+    const amountInput = document.getElementById('amount');
+    if (amountInput) {
+        amountInput.addEventListener('input', function() {
+            const selectedAmount = document.getElementById('selected-amount');
+            if (selectedAmount) selectedAmount.value = this.value + ' USDT';
+        });
+    }
+    
+    // Copy wallet address
+    const copyAddressBtn = document.getElementById('copy-address');
+    if (copyAddressBtn) {
+        copyAddressBtn.addEventListener('click', function() {
+            const address = document.getElementById('wallet-address');
+            if (address) {
+                address.select();
+                document.execCommand('copy');
+                
+                // Visual feedback
+                const originalText = this.textContent;
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.textContent = originalText;
+                }, 2000);
+            }
+        });
+    }
+    
+    // Submit transaction
+    const submitTxBtn = document.getElementById('submit-tx');
+    if (submitTxBtn) {
+        submitTxBtn.addEventListener('click', async function() {
+            if (!currentUser) {
+                alert('Please login first');
+                return;
+            }
+            
+            const button = this;
+            const originalText = showLoading(button);
+            
+            const txHash = document.getElementById('tx-hash').value;
+            const amount = document.getElementById('amount').value;
+            const lockPeriod = document.getElementById('term').value;
+            const compoundType = document.getElementById('compound').value;
+            
+            if (txHash.trim() === '') {
+                alert('Please enter your transaction hash');
+                hideLoading(button, originalText);
+                return;
+            }
+
+            console.log('Creating investment for user:', currentUser.id);
+            const result = await apiRequest('/invest', {
+                method: 'POST',
+                body: JSON.stringify({
+                    userId: currentUser.id,
+                    amount,
+                    lockPeriod,
+                    compoundType,
+                    transactionHash: txHash
+                }),
+            });
+            
+            if (result.success) {
+                const successMsg = document.getElementById('success-message');
+                if (successMsg) successMsg.classList.remove('hidden');
+                
+                const txHashInput = document.getElementById('tx-hash');
+                if (txHashInput) txHashInput.value = '';
+                
+                // Update user data
+                currentUser.balance = result.newBalance;
+                if (!currentUser.investments) currentUser.investments = [];
+                currentUser.investments.push(result.investment);
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateUIForUser();
+                
+                setTimeout(() => {
+                    if (successMsg) successMsg.classList.add('hidden');
+                }, 5000);
+            } else {
+                alert(result.error || 'Investment failed');
+            }
+            
+            hideLoading(button, originalText);
+        });
+    }
+    
+    // FAQ toggle
+    document.querySelectorAll('.faq-question').forEach(button => {
+        button.addEventListener('click', () => {
+            const answer = button.nextElementSibling;
+            const icon = button.querySelector('i');
+            
+            if (answer) answer.classList.toggle('hidden');
+            if (icon) {
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            }
+        });
+    });
+    
+    // Initialize selected values
+    const selectedAmount = document.getElementById('selected-amount');
+    const selectedTerm = document.getElementById('selected-term');
+    if (selectedAmount) selectedAmount.value = '5000 USDT';
+    if (selectedTerm) selectedTerm.value = '12 months';
+});
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded - initializing app');
+    console.log('🚀 DOM loaded - initializing YieldFarm Platform');
     
     // Check if user is already logged in
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-        console.log('Found saved user:', currentUser.email);
+        try {
+            currentUser = JSON.parse(savedUser);
+            console.log('✅ Found saved user:', currentUser.email);
+        } catch (e) {
+            console.error('❌ Error parsing saved user:', e);
+            localStorage.removeItem('currentUser');
+        }
     }
     
     updateUIForUser();
@@ -418,5 +457,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    console.log('App initialized successfully');
+    console.log('✅ YieldFarm Platform initialized successfully');
 });
