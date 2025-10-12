@@ -1,7 +1,7 @@
 // script.js
 // Authentication state
 let currentUser = null;
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = window.location.origin + '/api';
 
 // DOM Elements
 const authModal = document.getElementById('auth-modal');
@@ -84,11 +84,15 @@ async function apiRequest(endpoint, options = {}) {
             ...options,
         });
         
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         return data;
     } catch (error) {
         console.error('API request failed:', error);
-        return { error: 'Network error' };
+        return { error: 'Network error - Please check if server is running' };
     }
 }
 
