@@ -75,16 +75,31 @@
                     <a href="#faq" class="hover:text-defi-accent transition-colors">FAQ</a>
                 </nav>
                 
-                <!-- User Account & Mobile Menu -->
-                <div class="flex items-center space-x-4">
-                    <div class="hidden md:flex items-center space-x-3 bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20">
-                        <div class="w-3 h-3 bg-defi-accent rounded-full animate-pulse-slow"></div>
-                        <span class="text-sm">0x7a3...c9e1</span>
-                    </div>
-                    <button id="mobile-menu-button" class="md:hidden text-defi-accent">
-                        <i class="fas fa-bars text-xl"></i>
+                <!-- Authentication Buttons -->
+                <div class="flex items-center space-x-4" id="auth-buttons">
+                    <button onclick="showAuthModal('login')" class="border border-defi-accent text-defi-accent hover:bg-defi-accent/10 font-bold py-2 px-6 rounded-lg transition-colors">
+                        Login
+                    </button>
+                    <button onclick="showAuthModal('register')" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-2 px-6 rounded-lg transition-colors">
+                        Sign Up
                     </button>
                 </div>
+
+                <!-- User Section (Hidden by default) -->
+                <div class="hidden items-center space-x-4" id="user-section">
+                    <div class="flex items-center space-x-3 bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20">
+                        <div class="w-3 h-3 bg-defi-accent rounded-full animate-pulse-slow"></div>
+                        <span class="text-sm" id="user-email">user@example.com</span>
+                        <button onclick="logout()" class="text-defi-muted hover:text-defi-accent">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden text-defi-accent">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
             </div>
             
             <!-- Mobile Menu (Hidden by default) -->
@@ -96,16 +111,76 @@
                     <a href="#team" class="hover:text-defi-accent transition-colors">Team</a>
                     <a href="#testimonials" class="hover:text-defi-accent transition-colors">Testimonials</a>
                     <a href="#faq" class="hover:text-defi-accent transition-colors">FAQ</a>
-                    <div class="pt-4 border-t border-defi-accent/20">
+                    <div class="pt-4 border-t border-defi-accent/20" id="mobile-auth">
+                        <button onclick="showAuthModal('login')" class="w-full text-left py-2 hover:text-defi-accent">Login</button>
+                        <button onclick="showAuthModal('register')" class="w-full text-left py-2 hover:text-defi-accent">Sign Up</button>
+                    </div>
+                    <div class="hidden pt-4 border-t border-defi-accent/20" id="mobile-user">
                         <div class="flex items-center space-x-3">
                             <div class="w-3 h-3 bg-defi-accent rounded-full animate-pulse-slow"></div>
-                            <span class="text-sm">0x7a3...c9e1</span>
+                            <span class="text-sm" id="mobile-user-email">user@example.com</span>
                         </div>
+                        <button onclick="logout()" class="w-full text-left py-2 text-red-400 hover:text-red-300 mt-2">Logout</button>
                     </div>
                 </div>
             </div>
         </div>
     </header>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-defi-card rounded-xl border border-defi-accent/20 w-full max-w-md relative">
+            <button onclick="hideAuthModal()" class="absolute top-4 right-4 text-defi-muted hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <!-- Login Form -->
+            <div id="login-form" class="p-6">
+                <h3 class="font-orbitron text-xl font-bold mb-6 text-center">Login to Your Account</h3>
+                <form id="loginForm">
+                    <div class="mb-4">
+                        <label class="block text-defi-muted mb-2">Email</label>
+                        <input type="email" id="loginEmail" required 
+                            class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-defi-muted mb-2">Password</label>
+                        <input type="password" id="loginPassword" required 
+                            class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent">
+                    </div>
+                    <button type="submit" class="w-full bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-lg transition-colors">
+                        Login
+                    </button>
+                </form>
+                <p class="text-defi-muted text-center mt-4">
+                    Don't have an account? <button onclick="showAuthModal('register')" class="text-defi-accent hover:underline">Sign Up</button>
+                </p>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="register-form" class="p-6 hidden">
+                <h3 class="font-orbitron text-xl font-bold mb-6 text-center">Create Account</h3>
+                <form id="registerForm">
+                    <div class="mb-4">
+                        <label class="block text-defi-muted mb-2">Email</label>
+                        <input type="email" id="registerEmail" required 
+                            class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-defi-muted mb-2">Password</label>
+                        <input type="password" id="registerPassword" required 
+                            class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent">
+                    </div>
+                    <button type="submit" class="w-full bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-lg transition-colors">
+                        Create Account
+                    </button>
+                </form>
+                <p class="text-defi-muted text-center mt-4">
+                    Already have an account? <button onclick="showAuthModal('login')" class="text-defi-accent hover:underline">Login</button>
+                </p>
+            </div>
+        </div>
+    </div>
 
     <main class="relative z-10 container mx-auto px-4 py-8">
         <!-- Hero Section -->
@@ -126,7 +201,7 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-defi-muted">Total Balance</p>
-                            <p class="text-3xl font-bold mt-2">0.00 USDT</p>
+                            <p class="text-3xl font-bold mt-2" id="balance-display">0.00 USDT</p>
                         </div>
                         <i class="fas fa-wallet text-defi-accent text-2xl"></i>
                     </div>
@@ -135,7 +210,7 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-defi-muted">Active Investments</p>
-                            <p class="text-3xl font-bold mt-2">0</p>
+                            <p class="text-3xl font-bold mt-2" id="investments-display">0</p>
                         </div>
                         <i class="fas fa-chart-line text-defi-accent text-2xl"></i>
                     </div>
@@ -144,7 +219,7 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-defi-muted">Total Earnings</p>
-                            <p class="text-3xl font-bold mt-2">0.00 USDT</p>
+                            <p class="text-3xl font-bold mt-2" id="earnings-display">0.00 USDT</p>
                         </div>
                         <i class="fas fa-coins text-defi-accent text-2xl"></i>
                     </div>
@@ -155,7 +230,8 @@
             <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
                 <h3 class="font-orbitron text-xl font-bold mb-6">Weekly Earnings Projection</h3>
                 <div class="h-64 flex items-center justify-center border-2 border-dashed border-defi-accent/30 rounded-lg">
-                    <p class="text-defi-muted">Earnings chart will appear here when you have active investments</p>
+                    <p class="text-defi-muted" id="chart-message">Earnings chart will appear here when you have active investments</p>
+                    <canvas id="earnings-chart" class="hidden"></canvas>
                 </div>
             </div>
         </section>
@@ -252,6 +328,48 @@
             </div>
         </section>
 
+        <!-- About Section -->
+        <section id="about" class="mb-16">
+            <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">About YieldFarm</h2>
+            <div class="bg-defi-card p-8 rounded-xl border border-defi-accent/20">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="font-orbitron text-2xl font-bold mb-6 text-defi-accent">Pioneering DeFi Since 2017</h3>
+                        <p class="text-defi-muted mb-6 text-lg leading-relaxed">
+                            YieldFarm Platform was established in 2017 as one of the pioneering yield farming protocols in the decentralized finance space. 
+                            Our vision has always been to democratize access to high-yield investment opportunities that were previously available only to 
+                            institutional investors and high-net-worth individuals.
+                        </p>
+                        <p class="text-defi-muted mb-6 text-lg leading-relaxed">
+                            Backed by industry leaders including Binance, KuCoin, Bitget, Gate.io, MEXC, OKX, and ByBit, we have built a robust infrastructure 
+                            that turns your USDT investments into exceptional returns. Our yield-farmed funds are strategically deployed across premier DeFi 
+                            protocols including Jupiter, Aave, PancakeSwap, Orca, Radium, and SushiSwap, providing liquidity and automated market making 
+                            while generating sustainable yields for our investors.
+                        </p>
+                        <div class="flex flex-wrap gap-4 mt-8">
+                            <div class="bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20">
+                                <span class="text-defi-accent font-bold">$500M+</span>
+                                <p class="text-defi-muted text-sm">Total Value Locked</p>
+                            </div>
+                            <div class="bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20">
+                                <span class="text-defi-accent font-bold">50K+</span>
+                                <p class="text-defi-muted text-sm">Active Farmers</p>
+                            </div>
+                            <div class="bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20">
+                                <span class="text-defi-accent font-bold">2017</span>
+                                <p class="text-defi-muted text-sm">Established</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <div class="w-full max-w-md h-64 bg-gradient-to-br from-defi-accent/20 to-defi-accent/5 rounded-xl border border-defi-accent/20 flex items-center justify-center">
+                            <i class="fas fa-chart-network text-defi-accent text-6xl opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Testimonials Section -->
         <section id="testimonials" class="mb-16">
             <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">What Our Farmers Say</h2>
@@ -259,9 +377,7 @@
                 <!-- Testimonial 1 -->
                 <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
                     <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-defi-accent/20 rounded-full flex items-center justify-center mr-4">
-                            <span class="text-defi-accent font-bold">AJ</span>
-                        </div>
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" alt="Alex Johnson" class="w-12 h-12 rounded-full mr-4">
                         <div>
                             <h4 class="font-bold">Alex Johnson</h4>
                             <p class="text-defi-muted text-sm">Crypto Investor</p>
@@ -273,9 +389,7 @@
                 <!-- Testimonial 2 -->
                 <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
                     <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-defi-accent/20 rounded-full flex items-center justify-center mr-4">
-                            <span class="text-defi-accent font-bold">SC</span>
-                        </div>
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face" alt="Sarah Chen" class="w-12 h-12 rounded-full mr-4">
                         <div>
                             <h4 class="font-bold">Sarah Chen</h4>
                             <p class="text-defi-muted text-sm">DeFi Enthusiast</p>
@@ -287,9 +401,7 @@
                 <!-- Testimonial 3 -->
                 <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
                     <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-defi-accent/20 rounded-full flex items-center justify-center mr-4">
-                            <span class="text-defi-accent font-bold">MR</span>
-                        </div>
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt="Marcus Rodriguez" class="w-12 h-12 rounded-full mr-4">
                         <div>
                             <h4 class="font-bold">Marcus Rodriguez</h4>
                             <p class="text-defi-muted text-sm">Blockchain Developer</p>
@@ -301,9 +413,7 @@
                 <!-- Testimonial 4 -->
                 <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
                     <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-defi-accent/20 rounded-full flex items-center justify-center mr-4">
-                            <span class="text-defi-accent font-bold">KW</span>
-                        </div>
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face" alt="Keisha Williams" class="w-12 h-12 rounded-full mr-4">
                         <div>
                             <h4 class="font-bold">Keisha Williams</h4>
                             <p class="text-defi-muted text-sm">Financial Advisor</p>
@@ -325,10 +435,7 @@
                 <!-- Team Member 1 -->
                 <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20 text-center">
                     <div class="w-32 h-32 mx-auto mb-4 bg-defi-darker rounded-full overflow-hidden border-2 border-defi-accent/30">
-                        <!-- Placeholder for team member image -->
-                        <div class="w-full h-full bg-defi-accent/10 flex items-center justify-center">
-                            <i class="fas fa-user text-defi-accent text-4xl"></i>
-                        </div>
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=face" alt="Dr. Elena Petrova" class="w-full h-full object-cover">
                     </div>
                     <h3 class="font-orbitron text-xl font-bold mb-2">Dr. Elena Petrova</h3>
                     <p class="text-defi-accent mb-4">Chief Blockchain Architect</p>
@@ -343,10 +450,7 @@
                 <!-- Team Member 2 -->
                 <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20 text-center">
                     <div class="w-32 h-32 mx-auto mb-4 bg-defi-darker rounded-full overflow-hidden border-2 border-defi-accent/30">
-                        <!-- Placeholder for team member image -->
-                        <div class="w-full h-full bg-defi-accent/10 flex items-center justify-center">
-                            <i class="fas fa-user text-defi-accent text-4xl"></i>
-                        </div>
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face" alt="James O'Connell" class="w-full h-full object-cover">
                     </div>
                     <h3 class="font-orbitron text-xl font-bold mb-2">James O'Connell</h3>
                     <p class="text-defi-accent mb-4">DeFi Strategy Lead</p>
@@ -361,10 +465,7 @@
                 <!-- Team Member 3 -->
                 <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20 text-center">
                     <div class="w-32 h-32 mx-auto mb-4 bg-defi-darker rounded-full overflow-hidden border-2 border-defi-accent/30">
-                        <!-- Placeholder for team member image -->
-                        <div class="w-full h-full bg-defi-accent/10 flex items-center justify-center">
-                            <i class="fas fa-user text-defi-accent text-4xl"></i>
-                        </div>
+                        <img src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=200&h=200&fit=crop&crop=face" alt="Sophie Reynolds" class="w-full h-full object-cover">
                     </div>
                     <h3 class="font-orbitron text-xl font-bold mb-2">Sophie Reynolds</h3>
                     <p class="text-defi-accent mb-4">Head of Security</p>
@@ -427,7 +528,7 @@
                     <span class="font-orbitron text-xl font-bold">YieldFarm</span>
                 </div>
                 <div class="text-defi-muted text-center md:text-right">
-                    <p>&copy; 2025 YieldFarm Group. All rights reserved.</p>
+                    <p>&copy; 2017-2025 YieldFarm Group. All rights reserved.</p>
                     <p class="text-sm mt-2">Built for yield farmers worldwide</p>
                 </div>
             </div>
@@ -436,13 +537,168 @@
 
     <!-- JavaScript -->
     <script>
+        // Authentication state
+        let currentUser = null;
+        const API_BASE = 'http://localhost:3000/api';
+
+        // DOM Elements
+        const authModal = document.getElementById('auth-modal');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const authButtons = document.getElementById('auth-buttons');
+        const userSection = document.getElementById('user-section');
+        const userEmail = document.getElementById('user-email');
+        const mobileAuth = document.getElementById('mobile-auth');
+        const mobileUser = document.getElementById('mobile-user');
+        const mobileUserEmail = document.getElementById('mobile-user-email');
+
         // Mobile menu toggle
         document.getElementById('mobile-menu-button').addEventListener('click', function() {
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('hidden');
         });
 
-        // Investment calculator
+        // Auth modal functions
+        function showAuthModal(type) {
+            authModal.classList.remove('hidden');
+            if (type === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+            }
+        }
+
+        function hideAuthModal() {
+            authModal.classList.add('hidden');
+        }
+
+        // Close modal when clicking outside
+        authModal.addEventListener('click', function(e) {
+            if (e.target === authModal) {
+                hideAuthModal();
+            }
+        });
+
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const result = await loginUser(email, password);
+            if (result.success) {
+                hideAuthModal();
+                updateUIForUser();
+            } else {
+                alert(result.error || 'Login failed');
+            }
+        });
+
+        // Register form submission
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            
+            const result = await registerUser(email, password);
+            if (result.success) {
+                hideAuthModal();
+                updateUIForUser();
+            } else {
+                alert(result.error || 'Registration failed');
+            }
+        });
+
+        // Auth functions
+        async function apiRequest(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers,
+                    },
+                    ...options,
+                });
+                
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('API request failed:', error);
+                return { error: 'Network error' };
+            }
+        }
+
+        async function registerUser(email, password) {
+            const result = await apiRequest('/register', {
+                method: 'POST',
+                body: JSON.stringify({ email, password }),
+            });
+            
+            if (result.success) {
+                return loginUser(email, password);
+            }
+            
+            return result;
+        }
+
+        async function loginUser(email, password) {
+            const result = await apiRequest('/login', {
+                method: 'POST',
+                body: JSON.stringify({ email, password }),
+            });
+            
+            if (result.success) {
+                currentUser = result.user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                return result;
+            }
+            
+            return result;
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            updateUIForUser();
+        }
+
+        function updateUIForUser() {
+            if (currentUser) {
+                // User is logged in
+                authButtons.classList.add('hidden');
+                userSection.classList.remove('hidden');
+                userEmail.textContent = currentUser.email;
+                
+                mobileAuth.classList.add('hidden');
+                mobileUser.classList.remove('hidden');
+                mobileUserEmail.textContent = currentUser.email;
+                
+                // Update dashboard
+                updateDashboardNumbers(currentUser);
+            } else {
+                // User is not logged in
+                authButtons.classList.remove('hidden');
+                userSection.classList.add('hidden');
+                
+                mobileAuth.classList.remove('hidden');
+                mobileUser.classList.add('hidden');
+                
+                // Reset dashboard
+                document.getElementById('balance-display').textContent = '0.00 USDT';
+                document.getElementById('investments-display').textContent = '0';
+                document.getElementById('earnings-display').textContent = '0.00 USDT';
+            }
+        }
+
+        function updateDashboardNumbers(user) {
+            document.getElementById('balance-display').textContent = user.balance.toFixed(2) + ' USDT';
+            document.getElementById('earnings-display').textContent = user.totalEarnings.toFixed(2) + ' USDT';
+            document.getElementById('investments-display').textContent = user.investments ? user.investments.length : '0';
+        }
+
+        // Investment calculator functions
         document.getElementById('calculate-btn').addEventListener('click', calc);
         document.getElementById('reset-btn').addEventListener('click', resetForm);
         document.getElementById('term').addEventListener('input', function() {
@@ -474,21 +730,50 @@
         });
         
         // Submit transaction
-        document.getElementById('submit-tx').addEventListener('click', function() {
+        document.getElementById('submit-tx').addEventListener('click', async function() {
+            if (!currentUser) {
+                alert('Please login first');
+                return;
+            }
+            
             const txHash = document.getElementById('tx-hash').value;
+            const amount = document.getElementById('amount').value;
+            const lockPeriod = document.getElementById('term').value;
+            const compoundType = document.getElementById('compound').value;
+            
             if (txHash.trim() === '') {
                 alert('Please enter your transaction hash');
                 return;
             }
+
+            const result = await apiRequest('/invest', {
+                method: 'POST',
+                body: JSON.stringify({
+                    userId: currentUser.id,
+                    amount,
+                    lockPeriod,
+                    compoundType,
+                    transactionHash: txHash
+                }),
+            });
             
-            // Show success message
-            document.getElementById('success-message').classList.remove('hidden');
-            
-            // Reset form after 5 seconds
-            setTimeout(() => {
-                document.getElementById('success-message').classList.add('hidden');
+            if (result.success) {
+                document.getElementById('success-message').classList.remove('hidden');
                 document.getElementById('tx-hash').value = '';
-            }, 5000);
+                
+                // Update user data
+                currentUser.balance = result.newBalance;
+                if (!currentUser.investments) currentUser.investments = [];
+                currentUser.investments.push(result.investment);
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateUIForUser();
+                
+                setTimeout(() => {
+                    document.getElementById('success-message').classList.add('hidden');
+                }, 5000);
+            } else {
+                alert(result.error || 'Investment failed');
+            }
         });
         
         // FAQ toggle
@@ -565,8 +850,17 @@
             calc();
         }
 
-        // Initial calculation
-        calc();
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+            }
+            
+            updateUIForUser();
+            calc();
+        });
     </script>
 </body>
 </html>
