@@ -14,6 +14,19 @@ const mobileAuth = document.getElementById('mobile-auth');
 const mobileUser = document.getElementById('mobile-user');
 const mobileUserEmail = document.getElementById('mobile-user-email');
 
+// Show loading state
+function showLoading(button) {
+  const originalText = button.innerHTML;
+  button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Loading...';
+  button.disabled = true;
+  return originalText;
+}
+
+function hideLoading(button, originalText) {
+  button.innerHTML = originalText;
+  button.disabled = false;
+}
+
 // Mobile menu toggle
 document.getElementById('mobile-menu-button').addEventListener('click', function() {
     const menu = document.getElementById('mobile-menu');
@@ -46,6 +59,9 @@ authModal.addEventListener('click', function(e) {
 // Login form submission
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    const button = this.querySelector('button[type="submit"]');
+    const originalText = showLoading(button);
+    
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     
@@ -56,11 +72,15 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     } else {
         alert(result.error || 'Login failed');
     }
+    hideLoading(button, originalText);
 });
 
 // Register form submission
 document.getElementById('registerForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    const button = this.querySelector('button[type="submit"]');
+    const originalText = showLoading(button);
+    
     const email = document.getElementById('registerEmail').value;
     const password = document.getElementById('registerPassword').value;
     
@@ -71,6 +91,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     } else {
         alert(result.error || 'Registration failed');
     }
+    hideLoading(button, originalText);
 });
 
 // API Functions
@@ -92,7 +113,7 @@ async function apiRequest(endpoint, options = {}) {
         return data;
     } catch (error) {
         console.error('API request failed:', error);
-        return { error: 'Network error - Please check if server is running' };
+        return { error: 'Network error - Please try again later' };
     }
 }
 
@@ -202,6 +223,9 @@ document.getElementById('submit-tx').addEventListener('click', async function() 
         return;
     }
     
+    const button = this;
+    const originalText = showLoading(button);
+    
     const txHash = document.getElementById('tx-hash').value;
     const amount = document.getElementById('amount').value;
     const lockPeriod = document.getElementById('term').value;
@@ -209,6 +233,7 @@ document.getElementById('submit-tx').addEventListener('click', async function() 
     
     if (txHash.trim() === '') {
         alert('Please enter your transaction hash');
+        hideLoading(button, originalText);
         return;
     }
 
@@ -240,6 +265,8 @@ document.getElementById('submit-tx').addEventListener('click', async function() 
     } else {
         alert(result.error || 'Investment failed');
     }
+    
+    hideLoading(button, originalText);
 });
 
 // FAQ toggle
@@ -254,7 +281,7 @@ document.querySelectorAll('.faq-question').forEach(button => {
     });
 });
 
-// Calculator functions
+// Calculator functions - YOUR EXACT FORMULA
 function clamp(v, a, b) { return Math.min(Math.max(v, a), b); }
 
 function apyFromTerm(months) {
@@ -287,11 +314,14 @@ function calc() {
 
     let finalAmount;
     if (comp === 'monthly') {
-        const periods = months;
-        const monthlyRate = Math.pow(1 + apy, 1 / 12) - 1;
-        finalAmount = principal * Math.pow(1 + monthlyRate, periods);
+        // YOUR EXACT FORMULA: A = P(1 + r)^n
+        // Where P = principal, r = APY, n = months
+        finalAmount = principal * Math.pow(1 + apy, months);
     } else {
-        finalAmount = principal * (1 + apy * (months / 12));
+        // Simple interest: A = P(1 + r*t)
+        // Where r = APY, t = years (months/12)
+        const years = months / 12;
+        finalAmount = principal * (1 + apy * years);
     }
 
     const interest = finalAmount - principal;
@@ -301,6 +331,7 @@ function calc() {
             <div class="flex justify-between"><div class="text-defi-muted">APY</div><div class="font-bold">${(apy * 100).toFixed(2)}%</div></div>
             <div class="flex justify-between"><div class="text-defi-muted">Final Amount</div><div class="font-bold">${formatMoney(finalAmount)} USDT</div></div>
             <div class="flex justify-between"><div class="text-defi-muted">Total Interest</div><div class="font-bold">${formatMoney(interest)} USDT</div></div>
+            <div class="flex justify-between"><div class="text-defi-muted">Lock Period</div><div class="font-bold">${months} months</div></div>
         </div>
     `;
 }
