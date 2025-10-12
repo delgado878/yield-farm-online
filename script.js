@@ -1,33 +1,6 @@
-// script.js - Frontend Only Version (Works without backend)
+// script.js - Backend Connected Version
 let currentUser = null;
-
-// DOM Elements
-const authModal = document.getElementById('auth-modal');
-const loginForm = document.getElementById('login-form');
-const registerForm = document.getElementById('register-form');
-const authButtons = document.getElementById('auth-buttons');
-const userSection = document.getElementById('user-section');
-const userEmail = document.getElementById('user-email');
-const mobileAuth = document.getElementById('mobile-auth');
-const mobileUser = document.getElementById('mobile-user');
-const mobileUserEmail = document.getElementById('mobile-user-email');
-
-// Mock user data stored in localStorage
-function initMockUsers() {
-    if (!localStorage.getItem('mockUsers')) {
-        const mockUsers = [
-            {
-                id: 'user_1',
-                email: 'demo@yieldfarm.com',
-                password: 'password123',
-                balance: 15000,
-                totalEarnings: 1250,
-                investments: []
-            }
-        ];
-        localStorage.setItem('mockUsers', JSON.stringify(mockUsers));
-    }
-}
+const API_BASE = window.location.origin + '/api';
 
 // Show loading state
 function showLoading(button) {
@@ -109,68 +82,56 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     hideLoading(button, originalText);
 });
 
-// Mock API Functions (Frontend only)
-async function registerUser(email, password) {
-    initMockUsers();
-    const mockUsers = JSON.parse(localStorage.getItem('mockUsers'));
-    
-    // Check if user already exists
-    const existingUser = mockUsers.find(user => user.email === email);
-    if (existingUser) {
-        return { error: 'User already exists' };
-    }
-    
-    // Limit to 10 users max
-    if (mockUsers.length >= 10) {
-        return { error: 'Maximum user limit reached (10 users)' };
-    }
-    
-    // Create new user
-    const newUser = {
-        id: 'user_' + Date.now(),
-        email,
-        password, // In real app, this should be hashed
-        createdAt: new Date().toISOString(),
-        balance: 0,
-        totalEarnings: 0,
-        investments: []
-    };
-    
-    mockUsers.push(newUser);
-    localStorage.setItem('mockUsers', JSON.stringify(mockUsers));
-    localStorage.setItem('currentUser', JSON.stringify(newUser));
-    
-    return { 
-        success: true, 
-        user: { 
-            id: newUser.id, 
-            email: newUser.email,
-            balance: newUser.balance
+// Real API Functions
+async function apiRequest(endpoint, options = {}) {
+    try {
+        console.log('Making API request to:', `${API_BASE}${endpoint}`);
+        const response = await fetch(`${API_BASE}${endpoint}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers,
+            },
+            ...options,
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    };
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('API request failed:', error);
+        return { error: 'Backend server not responding. Please refresh and try again.' };
+    }
+}
+
+async function registerUser(email, password) {
+    const result = await apiRequest('/register', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+    });
+    
+    if (result.success) {
+        return loginUser(email, password);
+    }
+    
+    return result;
 }
 
 async function loginUser(email, password) {
-    initMockUsers();
-    const mockUsers = JSON.parse(localStorage.getItem('mockUsers'));
+    const result = await apiRequest('/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+    });
     
-    const user = mockUsers.find(u => u.email === email && u.password === password);
-    if (!user) {
-        return { error: 'Invalid email or password' };
+    if (result.success) {
+        currentUser = result.user;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        return result;
     }
     
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    
-    return {
-        success: true,
-        user: {
-            id: user.id,
-            email: user.email,
-            balance: user.balance,
-            totalEarnings: user.totalEarnings,
-            investments: user.investments || []
-        }
-    };
+    return result;
 }
 
 function logout() {
@@ -180,37 +141,52 @@ function logout() {
 }
 
 function updateUIForUser() {
+    const authButtons = document.getElementById('auth-buttons');
+    const userSection = document.getElementById('user-section');
+    const userEmail = document.getElementById('user-email');
+    const mobileAuth = document.getElementById('mobile-auth');
+    const mobileUser = document.getElementById('mobile-user');
+    const mobileUserEmail = document.getElementById('mobile-user-email');
+
     if (currentUser) {
         // User is logged in
-        authButtons.classList.add('hidden');
-        userSection.classList.remove('hidden');
-        userEmail.textContent = currentUser.email;
+        if (authButtons) authButtons.classList.add('hidden');
+        if (userSection) userSection.classList.remove('hidden');
+        if (userEmail) userEmail.textContent = currentUser.email;
         
-        mobileAuth.classList.add('hidden');
-        mobileUser.classList.remove('hidden');
-        mobileUserEmail.textContent = currentUser.email;
+        if (mobileAuth) mobileAuth.classList.add('hidden');
+        if (mobileUser) mobileUser.classList.remove('hidden');
+        if (mobileUserEmail) mobileUserEmail.textContent = currentUser.email;
         
         // Update dashboard
         updateDashboardNumbers(currentUser);
     } else {
         // User is not logged in
-        authButtons.classList.remove('hidden');
-        userSection.classList.add('hidden');
+        if (authButtons) authButtons.classList.remove('hidden');
+        if (userSection) userSection.classList.add('hidden');
         
-        mobileAuth.classList.remove('hidden');
-        mobileUser.classList.add('hidden');
+        if (mobileAuth) mobileAuth.classList.remove('hidden');
+        if (mobileUser) mobileUser.classList.add('hidden');
         
         // Reset dashboard
-        document.getElementById('balance-display').textContent = '0.00 USDT';
-        document.getElementById('investments-display').textContent = '0';
-        document.getElementById('earnings-display').textContent = '0.00 USDT';
+        const balanceDisplay = document.getElementById('balance-display');
+        const investmentsDisplay = document.getElementById('investments-display');
+        const earningsDisplay = document.getElementById('earnings-display');
+        
+        if (balanceDisplay) balanceDisplay.textContent = '0.00 USDT';
+        if (investmentsDisplay) investmentsDisplay.textContent = '0';
+        if (earningsDisplay) earningsDisplay.textContent = '0.00 USDT';
     }
 }
 
 function updateDashboardNumbers(user) {
-    document.getElementById('balance-display').textContent = user.balance.toFixed(2) + ' USDT';
-    document.getElementById('earnings-display').textContent = user.totalEarnings.toFixed(2) + ' USDT';
-    document.getElementById('investments-display').textContent = user.investments ? user.investments.length : '0';
+    const balanceDisplay = document.getElementById('balance-display');
+    const earningsDisplay = document.getElementById('earnings-display');
+    const investmentsDisplay = document.getElementById('investments-display');
+    
+    if (balanceDisplay) balanceDisplay.textContent = user.balance.toFixed(2) + ' USDT';
+    if (earningsDisplay) earningsDisplay.textContent = user.totalEarnings.toFixed(2) + ' USDT';
+    if (investmentsDisplay) investmentsDisplay.textContent = user.investments ? user.investments.length : '0';
 }
 
 // Investment calculator functions
@@ -255,8 +231,8 @@ document.getElementById('submit-tx').addEventListener('click', async function() 
     const originalText = showLoading(button);
     
     const txHash = document.getElementById('tx-hash').value;
-    const amount = parseFloat(document.getElementById('amount').value);
-    const lockPeriod = parseInt(document.getElementById('term').value);
+    const amount = document.getElementById('amount').value;
+    const lockPeriod = document.getElementById('term').value;
     const compoundType = document.getElementById('compound').value;
     
     if (txHash.trim() === '') {
@@ -265,48 +241,33 @@ document.getElementById('submit-tx').addEventListener('click', async function() 
         return;
     }
 
-    if (amount < 500 || amount > 1000000) {
-        alert('Amount must be between 500 and 1,000,000 USDT');
-        hideLoading(button, originalText);
-        return;
-    }
-
-    // Mock investment creation
-    const apy = apyFromTerm(lockPeriod);
+    const result = await apiRequest('/invest', {
+        method: 'POST',
+        body: JSON.stringify({
+            userId: currentUser.id,
+            amount,
+            lockPeriod,
+            compoundType,
+            transactionHash: txHash
+        }),
+    });
     
-    const newInvestment = {
-        id: 'inv_' + Date.now(),
-        amount: amount,
-        lockPeriod: lockPeriod,
-        compoundType: compoundType,
-        apy: apy,
-        transactionHash: txHash,
-        startDate: new Date().toISOString(),
-        status: 'active',
-        totalEarned: 0
-    };
-
-    // Update user data
-    const mockUsers = JSON.parse(localStorage.getItem('mockUsers'));
-    const userIndex = mockUsers.findIndex(u => u.id === currentUser.id);
-    
-    if (userIndex !== -1) {
-        mockUsers[userIndex].balance += amount;
-        if (!mockUsers[userIndex].investments) mockUsers[userIndex].investments = [];
-        mockUsers[userIndex].investments.push(newInvestment);
-        
-        localStorage.setItem('mockUsers', JSON.stringify(mockUsers));
-        localStorage.setItem('currentUser', JSON.stringify(mockUsers[userIndex]));
-        
-        currentUser = mockUsers[userIndex];
-        updateUIForUser();
-        
+    if (result.success) {
         document.getElementById('success-message').classList.remove('hidden');
         document.getElementById('tx-hash').value = '';
+        
+        // Update user data
+        currentUser.balance = result.newBalance;
+        if (!currentUser.investments) currentUser.investments = [];
+        currentUser.investments.push(result.investment);
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        updateUIForUser();
         
         setTimeout(() => {
             document.getElementById('success-message').classList.add('hidden');
         }, 5000);
+    } else {
+        alert(result.error || 'Investment failed');
     }
     
     hideLoading(button, originalText);
@@ -401,9 +362,6 @@ function resetForm() {
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize mock users
-    initMockUsers();
-    
     // Check if user is already logged in
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
@@ -413,6 +371,12 @@ document.addEventListener('DOMContentLoaded', function() {
     updateUIForUser();
     calc();
     
-    // Add demo credentials info
-    console.log('Demo Credentials: email: demo@yieldfarm.com, password: password123');
+    // Test backend connection
+    apiRequest('/health').then(health => {
+        if (health.status === 'OK') {
+            console.log('✅ Backend connected successfully');
+        } else {
+            console.log('❌ Backend not responding');
+        }
+    });
 });
