@@ -1,6 +1,13 @@
-// script.js - Backend Connected Version
+// script.js - Fixed Backend Connection
 let currentUser = null;
 const API_BASE = window.location.origin + '/api';
+
+console.log('API Base URL:', API_BASE);
+
+// DOM Elements
+const authModal = document.getElementById('auth-modal');
+const loginForm = document.getElementById('login-form');
+const registerForm = document.getElementById('register-form');
 
 // Show loading state
 function showLoading(button) {
@@ -23,6 +30,10 @@ document.getElementById('mobile-menu-button').addEventListener('click', function
 
 // Auth modal functions
 function showAuthModal(type) {
+    if (!authModal) {
+        console.error('Auth modal not found');
+        return;
+    }
     authModal.classList.remove('hidden');
     if (type === 'login') {
         loginForm.classList.remove('hidden');
@@ -34,58 +45,68 @@ function showAuthModal(type) {
 }
 
 function hideAuthModal() {
-    authModal.classList.add('hidden');
+    if (authModal) {
+        authModal.classList.add('hidden');
+    }
 }
 
 // Close modal when clicking outside
-authModal.addEventListener('click', function(e) {
-    if (e.target === authModal) {
-        hideAuthModal();
-    }
-});
+if (authModal) {
+    authModal.addEventListener('click', function(e) {
+        if (e.target === authModal) {
+            hideAuthModal();
+        }
+    });
+}
 
 // Login form submission
-document.getElementById('loginForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const button = this.querySelector('button[type="submit"]');
-    const originalText = showLoading(button);
-    
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    const result = await loginUser(email, password);
-    if (result.success) {
-        hideAuthModal();
-        updateUIForUser();
-    } else {
-        alert(result.error || 'Login failed');
-    }
-    hideLoading(button, originalText);
-});
+if (document.getElementById('loginForm')) {
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const button = this.querySelector('button[type="submit"]');
+        const originalText = showLoading(button);
+        
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        
+        console.log('Attempting login for:', email);
+        const result = await loginUser(email, password);
+        if (result.success) {
+            hideAuthModal();
+            updateUIForUser();
+        } else {
+            alert(result.error || 'Login failed');
+        }
+        hideLoading(button, originalText);
+    });
+}
 
 // Register form submission
-document.getElementById('registerForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const button = this.querySelector('button[type="submit"]');
-    const originalText = showLoading(button);
-    
-    const email = document.getElementById('registerEmail').value;
-    const password = document.getElementById('registerPassword').value;
-    
-    const result = await registerUser(email, password);
-    if (result.success) {
-        hideAuthModal();
-        updateUIForUser();
-    } else {
-        alert(result.error || 'Registration failed');
-    }
-    hideLoading(button, originalText);
-});
+if (document.getElementById('registerForm')) {
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const button = this.querySelector('button[type="submit"]');
+        const originalText = showLoading(button);
+        
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+        
+        console.log('Attempting registration for:', email);
+        const result = await registerUser(email, password);
+        if (result.success) {
+            hideAuthModal();
+            updateUIForUser();
+        } else {
+            alert(result.error || 'Registration failed');
+        }
+        hideLoading(button, originalText);
+    });
+}
 
 // Real API Functions
 async function apiRequest(endpoint, options = {}) {
     try {
-        console.log('Making API request to:', `${API_BASE}${endpoint}`);
+        console.log('API Request:', `${API_BASE}${endpoint}`);
         const response = await fetch(`${API_BASE}${endpoint}`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -99,10 +120,11 @@ async function apiRequest(endpoint, options = {}) {
         }
         
         const data = await response.json();
+        console.log('API Response:', data);
         return data;
     } catch (error) {
         console.error('API request failed:', error);
-        return { error: 'Backend server not responding. Please refresh and try again.' };
+        return { error: 'Network error - Please try again' };
     }
 }
 
@@ -128,6 +150,7 @@ async function loginUser(email, password) {
     if (result.success) {
         currentUser = result.user;
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        console.log('Login successful:', currentUser.email);
         return result;
     }
     
@@ -138,6 +161,7 @@ function logout() {
     currentUser = null;
     localStorage.removeItem('currentUser');
     updateUIForUser();
+    console.log('User logged out');
 }
 
 function updateUIForUser() {
@@ -160,6 +184,7 @@ function updateUIForUser() {
         
         // Update dashboard
         updateDashboardNumbers(currentUser);
+        console.log('UI updated for logged in user');
     } else {
         // User is not logged in
         if (authButtons) authButtons.classList.remove('hidden');
@@ -176,6 +201,8 @@ function updateUIForUser() {
         if (balanceDisplay) balanceDisplay.textContent = '0.00 USDT';
         if (investmentsDisplay) investmentsDisplay.textContent = '0';
         if (earningsDisplay) earningsDisplay.textContent = '0.00 USDT';
+        
+        console.log('UI updated for logged out user');
     }
 }
 
@@ -188,6 +215,13 @@ function updateDashboardNumbers(user) {
     if (earningsDisplay) earningsDisplay.textContent = user.totalEarnings.toFixed(2) + ' USDT';
     if (investmentsDisplay) investmentsDisplay.textContent = user.investments ? user.investments.length : '0';
 }
+
+// Make functions globally available
+window.showAuthModal = showAuthModal;
+window.hideAuthModal = hideAuthModal;
+window.logout = logout;
+window.calc = calc;
+window.resetForm = resetForm;
 
 // Investment calculator functions
 document.getElementById('calculate-btn').addEventListener('click', calc);
@@ -241,6 +275,7 @@ document.getElementById('submit-tx').addEventListener('click', async function() 
         return;
     }
 
+    console.log('Creating investment for user:', currentUser.id);
     const result = await apiRequest('/invest', {
         method: 'POST',
         body: JSON.stringify({
@@ -362,10 +397,13 @@ function resetForm() {
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded - initializing app');
+    
     // Check if user is already logged in
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
         currentUser = JSON.parse(savedUser);
+        console.log('Found saved user:', currentUser.email);
     }
     
     updateUIForUser();
@@ -379,4 +417,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('❌ Backend not responding');
         }
     });
+    
+    console.log('App initialized successfully');
 });
