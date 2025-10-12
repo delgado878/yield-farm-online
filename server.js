@@ -12,14 +12,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// Database file path - Use /tmp for Vercel compatibility
-const DB_PATH = path.join(__dirname, 'data', 'users.json');
+// Database file path - Use /tmp for Vercel serverless compatibility
+const DB_PATH = '/tmp/data/users.json';
 
 // Ensure data directory exists
 function ensureDataDirectory() {
   const dir = path.dirname(DB_PATH);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
+    console.log('Created data directory:', dir);
   }
 }
 
@@ -50,7 +51,13 @@ function readDatabase() {
     return JSON.parse(data);
   } catch (error) {
     console.error('Error reading database:', error);
-    return { users: [], settings: { wallet_address: "0x71C7656EC7ab88b098defB751B7401B5f6d897AB" } };
+    // Return default structure if file is corrupted
+    return { 
+      users: [], 
+      settings: { 
+        wallet_address: "0x71C7656EC7ab88b098defB751B7401B5f6d897AB" 
+      } 
+    };
   }
 }
 
@@ -68,6 +75,16 @@ function writeDatabase(data) {
 
 // Initialize database on startup
 initDatabase();
+
+// APY calculation function (matches frontend)
+function apyFromTerm(months) {
+  const minMonths = 3;
+  const maxMonths = 24;
+  const minApy = 0.30; // 30%
+  const maxApy = 2.00; // 200%
+  const t = (Math.min(Math.max(months, minMonths), maxMonths) - minMonths) / (maxMonths - minMonths);
+  return minApy + t * (maxApy - minApy);
+}
 
 // API Routes
 
@@ -188,7 +205,7 @@ app.post('/api/invest', (req, res) => {
   }
 
   // Calculate APY based on lock period (30% to 200%)
-  const apy = 0.30 + ((lockPeriod - 3) / 21) * 1.70;
+  const apy = apyFromTerm(lockPeriod);
 
   const newInvestment = {
     id: 'inv_' + Date.now(),
@@ -244,10 +261,11 @@ app.get('/api/user/:userId', (req, res) => {
     return res.status(404).json({ error: 'User not found' });
   }
 
-  // Calculate weekly gains
+  // Calculate weekly gains using your APY formula
   const activeInvestments = user.investments ? user.investments.filter(inv => inv.status === 'active') : [];
   const weeklyGains = activeInvestments.reduce((total, inv) => {
-    const weeklyReturn = (inv.amount * inv.apy) / 52;
+    // Weekly return using your formula: P(1 + r)^n where n = 1/52 (one week)
+    const weeklyReturn = inv.amount * (Math.pow(1 + inv.apy, 1/52) - 1);
     return total + weeklyReturn;
   }, 0);
 
@@ -270,6 +288,104 @@ app.get('/api/wallet-address', (req, res) => {
   res.json({ address: db.settings.wallet_address });
 });
 
+// Update earnings (manual trigger for demo)
+app.post('/api/update-earnings', (req, res) => {
+  const db = readDatabase();
+  const now = new Date();
+
+  db.users.forEach(user => {
+    if (user.investments) {
+      user.investments.forEach(investment => {
+        if (investment.status === 'active') {
+          // Calculate daily earnings using your APY formula
+          // Daily rate = (1 + APY)^(1/365) - 1
+          const dailyRate = Math.pow(1 + investment.apy, 1/365) - 1;
+          const dailyEarnings = investment.amount * dailyRate;
+          
+          investment.totalEarned += dailyEarnings;
+          
+          // Update user balance and total earnings
+          user.balance += dailyEarnings;
+          user.totalEarnings += dailyEarnings;
+          
+          // Record weekly earnings (for chart)
+          if (!investment.weeklyEarnings) investment.weeklyEarnings = [];
+          const weekData = {
+            week: Math.floor((now - new Date(investment.startDate)) / (7 * 24 * 60 * 60 * 1000)),
+            earnings: dailyEarnings,
+            timestamp: now.toISOString()
+          };
+          investment.weeklyEarnings.push(weekData);
+        }
+      });
+    }
+  });
+
+  if (writeDatabase(db)) {
+    res.json({ success: true, message: 'Earnings updated for all users' });
+  } else {
+    res.status(500).json({ error: 'Failed to update earnings' });
+  }
+});
+
+// Get all users (for admin purposes)
+app.get('/api/users', (req, res) => {
+  const db = readDatabase();
+  // Return users without passwords
+  const usersWithoutPasswords = db.users.map(user => {
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  });
+  res.json({ users: usersWithoutPasswords });
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Calculate projected returns (for frontend verification)
+app.post('/api/calculate', (req, res) => {
+  const { amount, lockPeriod, compoundType } = req.body;
+  
+  if (!amount || !lockPeriod) {
+    return res.status(400).json({ error: 'Amount and lock period are required' });
+  }
+
+  const investmentAmount = parseFloat(amount);
+  const months = parseInt(lockPeriod);
+  
+  if (investmentAmount < 500 || investmentAmount > 1000000) {
+    return res.status(400).json({ error: 'Amount must be between 500 and 1,000,000 USDT' });
+  }
+
+  const apy = apyFromTerm(months);
+
+  let finalAmount;
+  if (compoundType === 'monthly') {
+    // YOUR EXACT FORMULA: A = P(1 + r)^n
+    finalAmount = investmentAmount * Math.pow(1 + apy, months);
+  } else {
+    // Simple interest: A = P(1 + r*t)
+    const years = months / 12;
+    finalAmount = investmentAmount * (1 + apy * years);
+  }
+
+  const interest = finalAmount - investmentAmount;
+
+  res.json({
+    success: true,
+    apy: apy * 100,
+    finalAmount,
+    interest,
+    lockPeriod: months
+  });
+});
+
 // Serve the main page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
@@ -287,6 +403,8 @@ module.exports = app;
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`🚀 YieldFarm Server running on port ${PORT}`);
+    console.log(`📊 Database location: ${DB_PATH}`);
     console.log(`🌐 Open http://localhost:${PORT} in your browser`);
+    console.log(`📈 APY Range: 30% (3 months) to 200% (24 months)`);
   });
 }
