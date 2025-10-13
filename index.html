@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YieldFarm | High-Yield USDT Staking</title>
     
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -29,31 +32,11 @@
                     fontFamily: {
                         'orbitron': ['Orbitron', 'sans-serif'],
                         'mono': ['Roboto Mono', 'monospace'],
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     }
                 }
             }
         }
     </script>
-    
-    <style>
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-        .defi-bg {
-            background: radial-gradient(ellipse at center, #0f172a 0%, #020617 100%);
-        }
-        .crypto-grid {
-            background-image: 
-                linear-gradient(rgba(16, 185, 129, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-    </style>
 </head>
 <body class="defi-bg text-white font-mono min-h-screen">
     <!-- Animated background elements -->
@@ -237,6 +220,7 @@
                 <h3 class="font-orbitron text-xl font-bold mb-6">Weekly Earnings Projection</h3>
                 <div class="h-64 flex items-center justify-center border-2 border-dashed border-defi-accent/30 rounded-lg">
                     <p class="text-defi-muted" id="chart-message">Earnings chart will appear here when you have active investments</p>
+                    <canvas id="earnings-chart" class="hidden"></canvas>
                 </div>
             </div>
         </section>
@@ -275,10 +259,10 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mb-6">
-                        <button onclick="calc()" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-lg transition-colors">
+                        <button id="calculate-btn" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-lg transition-colors">
                             Calculate
                         </button>
-                        <button onclick="resetForm()" class="bg-defi-darker hover:bg-defi-darker/80 border border-defi-accent/20 font-bold py-3 px-4 rounded-lg transition-colors">
+                        <button id="reset-btn" class="bg-defi-darker hover:bg-defi-darker/80 border border-defi-accent/20 font-bold py-3 px-4 rounded-lg transition-colors">
                             Reset
                         </button>
                     </div>
@@ -307,9 +291,9 @@
                     <div class="mb-6">
                         <label class="block text-defi-muted mb-2">Deposit Wallet Address</label>
                         <div class="flex">
-                            <input type="text" id="wallet-address" value="0x49e33f878da28b7915f4387c13ff84ee4f2ed898" readonly 
+                            <input type="text" id="wallet-address" value="0x71C7656EC7ab88b098defB751B7401B5f6d897AB" readonly 
                                 class="flex-grow bg-defi-darker border border-defi-accent/20 rounded-l-lg py-3 px-4 text-defi-muted">
-                            <button onclick="copyAddress()" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-r-lg transition-colors">
+                            <button id="copy-address" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-r-lg transition-colors">
                                 Copy
                             </button>
                         </div>
@@ -322,7 +306,7 @@
                             class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent">
                     </div>
                     
-                    <button onclick="submitInvestment()" class="w-full bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-lg transition-colors mb-4">
+                    <button id="submit-tx" class="w-full bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-lg transition-colors mb-4">
                         Submit Transaction
                     </button>
                     
@@ -540,344 +524,7 @@
         </div>
     </footer>
 
-    <!-- JavaScript - Everything in one file -->
-    <script>
-        // Global variables
-        let currentUser = null;
-        let users = JSON.parse(localStorage.getItem('yieldfarm_users') || '[]');
-        let earningsInterval = null;
-
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 YieldFarm Platform Initialized');
-            
-            // Check for saved user
-            const savedUser = localStorage.getItem('yieldfarm_currentUser');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                console.log('✅ Found saved user:', currentUser.email);
-            }
-            
-            // Initialize event listeners
-            initEventListeners();
-            updateUIForUser();
-            calc(); // Initial calculation
-            
-            // Start earnings simulation
-            startEarningsSimulation();
-            
-            // Add demo user if none exists
-            if (users.length === 0) {
-                users.push({
-                    id: 'demo_user',
-                    email: 'demo@yieldfarm.com',
-                    password: 'password123',
-                    balance: 15000,
-                    totalEarnings: 1250,
-                    investments: [],
-                    createdAt: new Date().toISOString()
-                });
-                saveUsers();
-            }
-        });
-
-        // Event Listeners
-        function initEventListeners() {
-            // Mobile menu
-            document.getElementById('mobile-menu-button').addEventListener('click', function() {
-                document.getElementById('mobile-menu').classList.toggle('hidden');
-            });
-
-            // Term slider
-            document.getElementById('term').addEventListener('input', function() {
-                document.getElementById('termValue').textContent = this.value;
-                document.getElementById('selected-term').value = this.value + ' months';
-            });
-
-            // Amount input
-            document.getElementById('amount').addEventListener('input', function() {
-                document.getElementById('selected-amount').value = this.value + ' USDT';
-            });
-
-            // Login form
-            document.getElementById('loginForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = document.getElementById('loginEmail').value;
-                const password = document.getElementById('loginPassword').value;
-                loginUser(email, password);
-            });
-
-            // Register form
-            document.getElementById('registerForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = document.getElementById('registerEmail').value;
-                const password = document.getElementById('registerPassword').value;
-                registerUser(email, password);
-            });
-
-            // FAQ toggles
-            document.querySelectorAll('.faq-question').forEach(button => {
-                button.addEventListener('click', function() {
-                    const answer = this.nextElementSibling;
-                    const icon = this.querySelector('i');
-                    answer.classList.toggle('hidden');
-                    icon.classList.toggle('fa-chevron-down');
-                    icon.classList.toggle('fa-chevron-up');
-                });
-            });
-        }
-
-        // Auth Functions
-        function showAuthModal(type) {
-            document.getElementById('auth-modal').classList.remove('hidden');
-            if (type === 'login') {
-                document.getElementById('login-form').classList.remove('hidden');
-                document.getElementById('register-form').classList.add('hidden');
-            } else {
-                document.getElementById('login-form').classList.add('hidden');
-                document.getElementById('register-form').classList.remove('hidden');
-            }
-        }
-
-        function hideAuthModal() {
-            document.getElementById('auth-modal').classList.add('hidden');
-        }
-
-        function registerUser(email, password) {
-            if (users.find(u => u.email === email)) {
-                alert('User already exists!');
-                return;
-            }
-
-            const newUser = {
-                id: 'user_' + Date.now(),
-                email,
-                password,
-                balance: 0,
-                totalEarnings: 0,
-                investments: [],
-                createdAt: new Date().toISOString()
-            };
-
-            users.push(newUser);
-            saveUsers();
-            loginUser(email, password);
-        }
-
-        function loginUser(email, password) {
-            const user = users.find(u => u.email === email && u.password === password);
-            if (user) {
-                currentUser = user;
-                localStorage.setItem('yieldfarm_currentUser', JSON.stringify(currentUser));
-                hideAuthModal();
-                updateUIForUser();
-                alert('Login successful!');
-            } else {
-                alert('Invalid email or password!');
-            }
-        }
-
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('yieldfarm_currentUser');
-            updateUIForUser();
-        }
-
-        function updateUIForUser() {
-            const authButtons = document.getElementById('auth-buttons');
-            const userSection = document.getElementById('user-section');
-            const userEmail = document.getElementById('user-email');
-            const mobileAuth = document.getElementById('mobile-auth');
-            const mobileUser = document.getElementById('mobile-user');
-            const mobileUserEmail = document.getElementById('mobile-user-email');
-
-            if (currentUser) {
-                authButtons.classList.add('hidden');
-                userSection.classList.remove('hidden');
-                userEmail.textContent = currentUser.email;
-                mobileAuth.classList.add('hidden');
-                mobileUser.classList.remove('hidden');
-                mobileUserEmail.textContent = currentUser.email;
-                updateDashboardNumbers();
-            } else {
-                authButtons.classList.remove('hidden');
-                userSection.classList.add('hidden');
-                mobileAuth.classList.remove('hidden');
-                mobileUser.classList.add('hidden');
-                resetDashboard();
-            }
-        }
-
-        function updateDashboardNumbers() {
-            document.getElementById('balance-display').textContent = currentUser.balance.toFixed(2) + ' USDT';
-            document.getElementById('earnings-display').textContent = currentUser.totalEarnings.toFixed(2) + ' USDT';
-            document.getElementById('investments-display').textContent = currentUser.investments.length;
-        }
-
-        function resetDashboard() {
-            document.getElementById('balance-display').textContent = '0.00 USDT';
-            document.getElementById('earnings-display').textContent = '0.00 USDT';
-            document.getElementById('investments-display').textContent = '0';
-        }
-
-        // Calculator Functions - YOUR EXACT FORMULA
-        function apyFromTerm(months) {
-            const minMonths = 3;
-            const maxMonths = 24;
-            const minApy = 0.30;
-            const maxApy = 2.00;
-            const t = (Math.min(Math.max(months, minMonths), maxMonths) - minMonths) / (maxMonths - minMonths);
-            return minApy + t * (maxApy - minApy);
-        }
-
-        function formatMoney(n) { 
-            if (n > 1000000000) return (n / 1000000000).toFixed(2) + 'B';
-            if (n > 1000000) return (n / 1000000).toFixed(2) + 'M';
-            if (n > 1000) return (n / 1000).toFixed(2) + 'K';
-            return Number(n).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}); 
-        }
-
-        function calc() {
-            const principal = Number(document.getElementById('amount').value);
-            const months = Number(document.getElementById('term').value);
-            const comp = document.getElementById('compound').value;
-
-            if (principal < 500 || principal > 1000000) {
-                document.getElementById('result').innerHTML = '<div class="text-red-400">Enter amount between 500 and 1,000,000 USDT.</div>';
-                return;
-            }
-
-            const apy = apyFromTerm(months);
-            let finalAmount;
-
-            if (comp === 'monthly') {
-                // YOUR EXACT FORMULA: A = P(1 + r)^n
-                finalAmount = principal * Math.pow(1 + apy, months);
-            } else {
-                // Simple interest
-                const years = months / 12;
-                finalAmount = principal * (1 + apy * years);
-            }
-
-            const interest = finalAmount - principal;
-
-            document.getElementById('result').innerHTML = `
-                <div class="space-y-2">
-                    <div class="flex justify-between"><div class="text-defi-muted">APY</div><div class="font-bold">${(apy * 100).toFixed(2)}%</div></div>
-                    <div class="flex justify-between"><div class="text-defi-muted">Final Amount</div><div class="font-bold">${formatMoney(finalAmount)} USDT</div></div>
-                    <div class="flex justify-between"><div class="text-defi-muted">Total Interest</div><div class="font-bold">${formatMoney(interest)} USDT</div></div>
-                    <div class="flex justify-between"><div class="text-defi-muted">Lock Period</div><div class="font-bold">${months} months</div></div>
-                </div>
-            `;
-        }
-
-        function resetForm() {
-            document.getElementById('amount').value = 5000;
-            document.getElementById('term').value = 12;
-            document.getElementById('termValue').textContent = '12';
-            document.getElementById('compound').value = 'monthly';
-            document.getElementById('result').innerHTML = '<p class="text-defi-muted text-center">Enter your investment details to see projected returns</p>';
-            document.getElementById('selected-amount').value = '5000 USDT';
-            document.getElementById('selected-term').value = '12 months';
-            calc();
-        }
-
-        // Investment Functions
-        function copyAddress() {
-            const address = document.getElementById('wallet-address');
-            address.select();
-            document.execCommand('copy');
-            const button = document.querySelector('#copy-address');
-            const originalText = button.textContent;
-            button.textContent = 'Copied!';
-            setTimeout(() => button.textContent = originalText, 2000);
-        }
-
-        function submitInvestment() {
-            if (!currentUser) {
-                alert('Please login first!');
-                return;
-            }
-
-            const txHash = document.getElementById('tx-hash').value;
-            if (!txHash.trim()) {
-                alert('Please enter transaction hash!');
-                return;
-            }
-
-            const amount = parseFloat(document.getElementById('amount').value);
-            const lockPeriod = parseInt(document.getElementById('term').value);
-            const compoundType = document.getElementById('compound').value;
-
-            const investment = {
-                id: 'inv_' + Date.now(),
-                amount,
-                lockPeriod,
-                compoundType,
-                apy: apyFromTerm(lockPeriod),
-                transactionHash: txHash,
-                startDate: new Date().toISOString(),
-                status: 'active',
-                totalEarned: 0
-            };
-
-            currentUser.balance += amount;
-            currentUser.investments.push(investment);
-            
-            saveUsers();
-            localStorage.setItem('yieldfarm_currentUser', JSON.stringify(currentUser));
-            
-            document.getElementById('success-message').classList.remove('hidden');
-            document.getElementById('tx-hash').value = '';
-            updateUIForUser();
-            
-            setTimeout(() => {
-                document.getElementById('success-message').classList.add('hidden');
-            }, 5000);
-        }
-
-        // Earnings Simulation
-        function startEarningsSimulation() {
-            if (earningsInterval) clearInterval(earningsInterval);
-            
-            earningsInterval = setInterval(() => {
-                if (currentUser && currentUser.investments.length > 0) {
-                    let totalEarnings = 0;
-                    
-                    currentUser.investments.forEach(inv => {
-                        if (inv.status === 'active') {
-                            // Daily earnings using your APY formula
-                            const dailyRate = Math.pow(1 + inv.apy, 1/365) - 1;
-                            const dailyEarnings = inv.amount * dailyRate;
-                            
-                            inv.totalEarned += dailyEarnings;
-                            currentUser.balance += dailyEarnings;
-                            currentUser.totalEarnings += dailyEarnings;
-                            totalEarnings += dailyEarnings;
-                        }
-                    });
-                    
-                    if (totalEarnings > 0) {
-                        saveUsers();
-                        localStorage.setItem('yieldfarm_currentUser', JSON.stringify(currentUser));
-                        updateUIForUser();
-                    }
-                }
-            }, 30000); // Update every 30 seconds for demo
-        }
-
-        function saveUsers() {
-            localStorage.setItem('yieldfarm_users', JSON.stringify(users));
-        }
-
-        // Make functions globally available
-        window.showAuthModal = showAuthModal;
-        window.hideAuthModal = hideAuthModal;
-        window.logout = logout;
-        window.calc = calc;
-        window.resetForm = resetForm;
-        window.copyAddress = copyAddress;
-        window.submitInvestment = submitInvestment;
-    </script>
+    <!-- External JavaScript -->
+    <script src="script.js"></script>
 </body>
 </html>
