@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yield Farm Platform | System Maintenance Notice</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Roboto+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'defi-dark': '#0f172a',
+                        'defi-darker': '#020617',
+                        'defi-card': '#1e293b',
+                        'defi-accent': '#10b981',
+                        'defi-accent-hover': '#34d399',
+                        'defi-muted': '#94a3b8',
+                    },
+                    fontFamily: {
+                        'orbitron': ['Orbitron', 'sans-serif'],
+                        'mono': ['Roboto Mono', 'monospace'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        .defi-bg {
+            background: radial-gradient(ellipse at center, #0f172a 0%, #020617 100%);
+        }
+        .crypto-grid {
+            background-image: 
+                linear-gradient(rgba(16, 185, 129, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        .maintenance-pulse {
+            animation: maintenance-pulse 2s ease-in-out infinite;
+        }
+        @keyframes maintenance-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .mobile-padding {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            .mobile-text-lg {
+                font-size: 1.125rem;
+            }
+            .mobile-text-xl {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* Improve touch targets for mobile */
+        .touch-target {
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        /* Better form inputs on mobile */
+        input, select, textarea {
+            font-size: 16px; /* Prevents zoom on iOS */
+        }
+    </style>
+</head>
+<body class="defi-bg text-white font-mono min-h-screen">
+    <!-- Animated background elements -->
+    <div class="fixed inset-0 crypto-grid z-0"></div>
+    <div class="fixed top-1/4 left-4 sm:left-10 w-3 h-3 sm:w-4 sm:h-4 bg-defi-accent rounded-full opacity-20 animate-float"></div>
+    <div class="fixed top-1/3 right-4 sm:right-20 w-4 h-4 sm:w-6 sm:h-6 bg-defi-accent rounded-full opacity-30 animate-float" style="animation-delay: -2s;"></div>
+    <div class="fixed bottom-1/4 left-1/4 w-2 h-2 sm:w-3 sm:h-3 bg-defi-accent rounded-full opacity-40 animate-float" style="animation-delay: -4s;"></div>
+
+    <!-- Header -->
+    <header class="relative z-10 bg-defi-card/80 backdrop-blur-md border-b border-defi-accent/20">
+        <div class="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-seedling text-defi-accent text-xl sm:text-2xl"></i>
+                    <span class="font-orbitron text-lg sm:text-xl font-bold">Yield Farm</span>
+                </div>
+                <div class="flex items-center space-x-2 bg-amber-500/20 border border-amber-500/40 px-2 sm:px-3 py-1 rounded-lg">
+                    <i class="fas fa-tools text-amber-400 text-xs sm:text-sm"></i>
+                    <span class="text-amber-300 text-xs sm:text-sm font-bold">MAINTENANCE</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative z-10 container mx-auto px-3 sm:px-4 py-6 sm:py-8">
+        <!-- Maintenance Hero Section -->
+        <section class="text-center py-8 sm:py-16 mb-6 sm:mb-8">
+            <div class="max-w-4xl mx-auto mobile-padding">
+                <div class="maintenance-pulse mb-6 sm:mb-8">
+                    <i class="fas fa-tools text-defi-accent text-4xl sm:text-6xl mb-3 sm:mb-4"></i>
+                </div>
+                <h1 class="font-orbitron text-2xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
+                    System <span class="text-defi-accent">Maintenance</span>
+                </h1>
+                <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
+                    <div class="flex items-center justify-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+                        <i class="fas fa-exclamation-triangle text-amber-400 text-lg sm:text-xl"></i>
+                        <p class="text-amber-300 font-bold text-base sm:text-lg mobile-text-lg">Scheduled System Upgrade</p>
+                    </div>
+                    <p class="text-amber-200 text-sm sm:text-base">We are enhancing your Yield Farming experience</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Maintenance Information -->
+        <section class="mb-12 sm:mb-16">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto mobile-padding">
+                <!-- Maintenance Details Card -->
+                <div class="bg-defi-card p-4 sm:p-6 lg:p-8 rounded-xl border border-defi-accent/20">
+                    <h2 class="font-orbitron text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-defi-accent">⚠️ System Upgrade Notice</h2>
+
+                    <div class="space-y-4 sm:space-y-6">
+                        <div class="flex items-start space-x-3 sm:space-x-4">
+                            <i class="fas fa-rocket text-defi-accent mt-1 text-sm sm:text-base"></i>
+                            <div class="flex-1">
+                                <h3 class="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Enhanced Platform Performance & Security</h3>
+                                <p class="text-defi-muted text-xs sm:text-sm">We are performing a scheduled system upgrade to enhance performance, security, and reliability across the platform.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3 sm:space-x-4">
+                            <i class="fas fa-pause-circle text-defi-accent mt-1 text-sm sm:text-base"></i>
+                            <div class="flex-1">
+                                <h3 class="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Temporary Service Pause</h3>
+                                <p class="text-defi-muted text-xs sm:text-sm">During this maintenance period, user access to dashboards, deposits, and withdrawal activities will be temporarily paused.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3 sm:space-x-4">
+                            <i class="fas fa-lock text-defi-accent mt-1 text-sm sm:text-base"></i>
+                            <div class="flex-1">
+                                <h3 class="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Your Assets Are Secure</h3>
+                                <p class="text-defi-muted text-xs sm:text-sm">All assets remain securely stored in our smart contracts. The yield farming continues and your farmed USDT will be credited to your account after restoration.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3 sm:space-x-4">
+                            <i class="fas fa-clock text-defi-accent mt-1 text-sm sm:text-base"></i>
+                            <div class="flex-1">
+                                <h3 class="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Expected Timeline</h3>
+                                <p class="text-defi-muted text-xs sm:text-sm">We expect full service restoration in less than 72 hours. Updates will be shared through our email service.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 sm:mt-8 p-3 sm:p-4 bg-defi-darker/60 rounded-lg border border-defi-accent/20">
+                        <p class="text-defi-muted text-center text-xs sm:text-sm">
+                            <i class="fas fa-info-circle text-defi-accent mr-1 sm:mr-2"></i>
+                            No action is required from your end. Thank you for your understanding and continued trust. We apologize for any inconveniences caused.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Contact Form Card -->
+                <div class="bg-defi-card p-4 sm:p-6 lg:p-8 rounded-xl border border-defi-accent/20">
+                    <h2 class="font-orbitron text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-defi-accent">Contact Support</h2>
+                    <p class="text-defi-muted mb-4 sm:mb-6 text-xs sm:text-sm">For urgent inquiries during maintenance, please use the form below:</p>
+
+                    <form id="contact-form" action="https://formspree.io/f/xyznbkeb" method="POST" class="space-y-4 sm:space-y-6">
+                        <div>
+                            <label for="name" class="block text-defi-muted mb-1 sm:mb-2 text-sm sm:text-base">Full Name *</label>
+                            <input type="text" id="name" name="name" required 
+                                class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-2 sm:py-3 px-3 sm:px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent text-sm sm:text-base touch-target"
+                                placeholder="Enter your full name">
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-defi-muted mb-1 sm:mb-2 text-sm sm:text-base">Email Address *</label>
+                            <input type="email" id="email" name="email" required 
+                                class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-2 sm:py-3 px-3 sm:px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent text-sm sm:text-base touch-target"
+                                placeholder="Enter your email address">
+                        </div>
+
+                        <div>
+                            <label for="subject" class="block text-defi-muted mb-1 sm:mb-2 text-sm sm:text-base">Inquiry Type *</label>
+                            <select id="subject" name="subject" required 
+                                class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-2 sm:py-3 px-3 sm:px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent text-sm sm:text-base touch-target">
+                                <option value="">Select inquiry type</option>
+                                <option value="Account Access">Account Access Issue</option>
+                                <option value="Funds Inquiry">Funds Inquiry</option>
+                                <option value="Technical Support">Technical Support</option>
+                                <option value="General Question">General Question</option>
+                                <option value="Partnership">Partnership Inquiry</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="message" class="block text-defi-muted mb-1 sm:mb-2 text-sm sm:text-base">Message *</label>
+                            <textarea id="message" name="message" required rows="4" sm:rows="5"
+                                class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-2 sm:py-3 px-3 sm:px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent resize-none text-sm sm:text-base touch-target"
+                                placeholder="Please describe your inquiry in detail..."></textarea>
+                        </div>
+
+                        <input type="hidden" name="_replyto" value="yieldfarm.online@gmail.com">
+                        <input type="hidden" name="_subject" value="YieldFarm Maintenance Inquiry">
+
+                        <button type="submit" id="submit-btn"
+                            class="w-full bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 touch-target text-sm sm:text-base">
+                            <i class="fas fa-paper-plane text-xs sm:text-sm"></i>
+                            <span>Send Message</span>
+                        </button>
+
+                        <p class="text-defi-muted text-xs text-center">
+                            <i class="fas fa-shield-alt mr-1"></i>
+                            Messages are securely transmitted through our mail host.
+                        </p>
+                    </form>
+
+                    <div id="form-success" class="hidden mt-3 sm:mt-4 bg-defi-accent/20 border border-defi-accent text-defi-accent p-3 sm:p-4 rounded-lg text-center text-xs sm:text-sm">
+                        <i class="fas fa-check-circle mr-1 sm:mr-2"></i> 
+                        <span id="success-message">Message sent to the support team successfully! We will respond within 24 hours.</span>
+                    </div>
+
+                    <div id="form-error" class="hidden mt-3 sm:mt-4 bg-red-500/20 border border-red-500 text-red-400 p-3 sm:p-4 rounded-lg text-center text-xs sm:text-sm">
+                        <i class="fas fa-exclamation-circle mr-1 sm:mr-2"></i>
+                        <span id="error-message">There was an error sending your message. Please try again.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Status Timeline -->
+        <section class="mb-12 sm:mb-16 max-w-4xl mx-auto mobile-padding">
+            <div class="bg-defi-card p-4 sm:p-6 lg:p-8 rounded-xl border border-defi-accent/20">
+                <h2 class="font-orbitron text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-defi-accent text-center">Maintenance Progress</h2>
+
+                <div class="space-y-4 sm:space-y-6">
+                    <div class="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-defi-accent/10 rounded-lg border border-defi-accent/20">
+                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-defi-accent rounded-full animate-pulse-slow flex-shrink-0"></div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold text-sm sm:text-base">Security Enhancements</h3>
+                            <p class="text-defi-muted text-xs sm:text-sm truncate">Implementing advanced security protocols</p>
+                        </div>
+                        <div class="flex-shrink-0 ml-2">
+                            <span class="bg-defi-accent text-defi-darker text-xs font-bold px-2 py-1 rounded">IN PROGRESS</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-defi-darker/40 rounded-lg border border-defi-muted/20">
+                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-defi-muted rounded-full flex-shrink-0"></div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold text-defi-muted text-sm sm:text-base">Performance Optimization</h3>
+                            <p class="text-defi-muted text-xs sm:text-sm truncate">Upgrading system infrastructure</p>
+                        </div>
+                        <div class="flex-shrink-0 ml-2">
+                            <span class="bg-defi-muted text-defi-darker text-xs font-bold px-2 py-1 rounded">PENDING</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-defi-darker/40 rounded-lg border border-defi-muted/20">
+                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-defi-muted rounded-full flex-shrink-0"></div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold text-defi-muted text-sm sm:text-base">System Testing</h3>
+                            <p class="text-defi-muted text-xs sm:text-sm truncate">Comprehensive testing before relaunch</p>
+                        </div>
+                        <div class="flex-shrink-0 ml-2">
+                            <span class="bg-defi-muted text-defi-darker text-xs font-bold px-2 py-1 rounded">PENDING</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Info Cards -->
+        <section class="max-w-6xl mx-auto mobile-padding">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+                <div class="bg-defi-card p-4 sm:p-6 rounded-xl border border-defi-accent/20 text-center">
+                    <i class="fas fa-shield-alt text-defi-accent text-2xl sm:text-3xl mb-3 sm:mb-4"></i>
+                    <h3 class="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Assets Protected</h3>
+                    <p class="text-defi-muted text-xs sm:text-sm">All funds secured in audited smart contracts</p>
+                </div>
+
+                <div class="bg-defi-card p-4 sm:p-6 rounded-xl border border-defi-accent/20 text-center">
+                    <i class="fas fa-chart-line text-defi-accent text-2xl sm:text-3xl mb-3 sm:mb-4"></i>
+                    <h3 class="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Yield Farming Continues</h3>
+                    <p class="text-defi-muted text-xs sm:text-sm">USDT yield generation active during maintenance</p>
+                </div>
+
+                <div class="bg-defi-card p-4 sm:p-6 rounded-xl border border-defi-accent/20 text-center">
+                    <i class="fas fa-history text-defi-accent text-2xl sm:text-3xl mb-3 sm:mb-4"></i>
+                    <h3 class="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Quick Restoration</h3>
+                    <p class="text-defi-muted text-xs sm:text-sm">Expected completion within 72 hours</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 bg-defi-card border-t border-defi-accent/20 py-6 sm:py-8 mt-12 sm:mt-16">
+        <div class="container mx-auto px-3 sm:px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 mb-3 sm:mb-4 md:mb-0">
+                    <i class="fas fa-seedling text-defi-accent text-xl sm:text-2xl"></i>
+                    <span class="font-orbitron text-lg sm:text-xl font-bold">Yield Farm Platform ltd</span>
+                </div>
+                <div class="text-defi-muted text-center md:text-right">
+                    <p class="text-xs sm:text-sm">&copy; 2017-2025 Yield Farm Group. All rights reserved.</p>
+                    <p class="text-xs mt-1 sm:mt-2">Enhanced security upgrades in progress</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 YieldFarm Maintenance Page Loaded');
+
+            const contactForm = document.getElementById('contact-form');
+            const submitBtn = document.getElementById('submit-btn');
+            const formSuccess = document.getElementById('form-success');
+            const formError = document.getElementById('form-error');
+
+            if (contactForm) {
+                contactForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    // Show loading state
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+                    submitBtn.disabled = true;
+
+                    try {
+                        // Use Formspree's native form submission
+                        const formData = new FormData(contactForm);
+
+                        const response = await fetch(contactForm.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                        if (response.ok) {
+                            // Success
+                            contactForm.reset();
+                            formSuccess.classList.remove('hidden');
+                            formError.classList.add('hidden');
+
+                            // Hide success message after 5 seconds
+                            setTimeout(() => {
+                                formSuccess.classList.add('hidden');
+                            }, 5000);
+                        } else {
+                            // Error
+                            throw new Error('Form submission failed');
+                        }
+                    } catch (error) {
+                        // Show error message
+                        formError.classList.remove('hidden');
+                        formSuccess.classList.add('hidden');
+
+                        // Hide error message after 5 seconds
+                        setTimeout(() => {
+                            formError.classList.add('hidden');
+                        }, 5000);
+                    } finally {
+                        // Restore button
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
