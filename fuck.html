@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YieldFarm | High-Yield USDT Farming</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Roboto+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s ease-in-out infinite;
+        }
+
+        .crypto-grid {
+            background-image: 
+                linear-gradient(rgba(16, 185, 129, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* Mobile responsiveness improvements */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .section-padding {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+
+        /* Profile dropdown styles */
+        .profile-dropdown {
+            transition: all 0.3s ease;
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'defi-dark': '#0f172a',
+                        'defi-darker': '#020617',
+                        'defi-card': '#1e293b',
+                        'defi-accent': '#10b981',
+                        'defi-accent-hover': '#34d399',
+                        'defi-muted': '#94a3b8',
+                    },
+                    fontFamily: {
+                        'orbitron': ['Orbitron', 'sans-serif'],
+                        'mono': ['Roboto Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-defi-dark text-white font-mono min-h-screen">
+    <!-- Animated background elements -->
+    <div class="fixed inset-0 crypto-grid z-0"></div>
+    <div class="fixed top-1/4 left-10 w-4 h-4 bg-defi-accent rounded-full opacity-20 animate-float"></div>
+    <div class="fixed top-1/3 right-20 w-6 h-6 bg-defi-accent rounded-full opacity-30 animate-float" style="animation-delay: -2s;"></div>
+    <div class="fixed bottom-1/4 left-1/4 w-3 h-3 bg-defi-accent rounded-full opacity-40 animate-float" style="animation-delay: -4s;"></div>
+
+    <!-- Header & Navigation -->
+    <header class="relative z-10 bg-defi-card/80 backdrop-blur-md border-b border-defi-accent/20">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-seedling text-defi-accent text-2xl"></i>
+                    <span class="font-orbitron text-xl font-bold">YieldFarm</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#dashboard" class="hover:text-defi-accent transition-colors">Dashboard</a>
+                    <a href="#invest" class="hover:text-defi-accent transition-colors">Invest</a>
+                    <a href="#about" class="hover:text-defi-accent transition-colors">About</a>
+                    <a href="#team" class="hover:text-defi-accent transition-colors">Team</a>
+                    <a href="#testimonials" class="hover:text-defi-accent transition-colors">Testimonials</a>
+                    <a href="#faq" class="hover:text-defi-accent transition-colors">FAQ</a>
+                </nav>
+
+                <!-- User Profile Dropdown -->
+                <div class="relative" id="user-section">
+                    <button id="profile-dropdown-button" class="flex items-center space-x-3 bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20 hover:bg-defi-darker transition-colors">
+                        <div class="w-3 h-3 bg-defi-accent rounded-full animate-pulse-slow"></div>
+                        <span class="text-sm max-w-[150px] truncate">alloysiousarinaitwe200@gmail.com</span>
+                        <i class="fas fa-chevron-down text-defi-accent text-xs"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="profile-dropdown" class="profile-dropdown absolute right-0 mt-2 w-64 bg-defi-card rounded-xl border border-defi-accent/20 shadow-lg z-20 hidden">
+                        <div class="p-4 border-b border-defi-accent/20">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-defi-accent/20 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-defi-accent"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold truncate">alloysiousarinaitwe200@gmail.com</p>
+                                    <p class="text-defi-muted text-sm">Premium Investor</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-2">
+                            <a href="#dashboard" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-defi-darker/60 transition-colors">
+                                <i class="fas fa-tachometer-alt text-defi-accent w-5"></i>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="#invest" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-defi-darker/60 transition-colors">
+                                <i class="fas fa-chart-line text-defi-accent w-5"></i>
+                                <span>Invest</span>
+                            </a>
+                            <a href="#about" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-defi-darker/60 transition-colors">
+                                <i class="fas fa-info-circle text-defi-accent w-5"></i>
+                                <span>About Project</span>
+                            </a>
+                            <div class="border-t border-defi-accent/20 my-2"></div>
+                            <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-defi-darker/60 transition-colors text-red-400 hover:text-red-300">
+                                <i class="fas fa-sign-out-alt w-5"></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden text-defi-accent">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu (Hidden by default) -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-defi-accent/20 pt-4">
+                <div class="flex flex-col space-y-4">
+                    <a href="#dashboard" class="hover:text-defi-accent transition-colors py-2">Dashboard</a>
+                    <a href="#invest" class="hover:text-defi-accent transition-colors py-2">Invest</a>
+                    <a href="#about" class="hover:text-defi-accent transition-colors py-2">About</a>
+                    <a href="#team" class="hover:text-defi-accent transition-colors py-2">Team</a>
+                    <a href="#testimonials" class="hover:text-defi-accent transition-colors py-2">Testimonials</a>
+                    <a href="#faq" class="hover:text-defi-accent transition-colors py-2">FAQ</a>
+                    <div class="pt-4 border-t border-defi-accent/20" id="mobile-user">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-3 h-3 bg-defi-accent rounded-full animate-pulse-slow"></div>
+                            <span class="text-sm truncate">alloysiousarinaitwe200@gmail.com</span>
+                        </div>
+                        <a href="#" class="w-full text-left py-2 text-red-400 hover:text-red-300">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative z-10 container mx-auto px-4 py-8 section-padding">
+        <!-- Hero Section -->
+        <section class="text-center py-16 mb-8">
+            <h1 class="font-orbitron text-4xl md:text-6xl font-bold mb-6 hero-title">Yield <span class="text-defi-accent">Farming</span> Reinvented</h1>
+            <p class="text-defi-muted text-lg md:text-xl max-w-2xl mx-auto mb-8">Earn 30% to 200% APY on your USDT deposits. The future of decentralized finance is here.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#invest" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-8 rounded-lg transition-colors text-center">Start Earning Now</a>
+                <a href="#about" class="border border-defi-accent text-defi-accent hover:bg-defi-accent/10 font-bold py-3 px-8 rounded-lg transition-colors text-center">Learn More</a>
+            </div>
+        </section>
+
+
+
+
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="mb-16">
+            <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">Investment Dashboard</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-defi-muted">Total Investment</p>
+                            <p class="text-3xl font-bold mt-2" id="balance-display">570.000 USDT</p>
+                        </div>
+                        <i class="fas fa-wallet text-defi-accent text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-defi-muted">Active Investments</p>
+                            <p class="text-3xl font-bold mt-2" id="investments-display">1</p>
+                        </div>
+                        <i class="fas fa-chart-line text-defi-accent text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-defi-muted">Total Earnings</p>
+
+
+
+
+
+
+                            <p class="text-3xl font-bold mt-2" id="earnings-display">307.010 USDT</p>
+                        </div>
+
+
+
+
+
+
+                        <i class="fas fa-coins text-defi-accent text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Earnings Chart Placeholder -->
+            <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                <h3 class="font-orbitron text-xl font-bold mb-6">Weekly Earnings Projection</h3>
+                <div class="h-64 flex items-center justify-center border-2 border-dashed border-defi-accent/30 rounded-lg">
+                    <p class="text-defi-muted text-center px-4" id="chart-message">Earnings chart will appear here when you have active investments</p>
+                    <canvas id="earnings-chart" class="hidden"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Investment Calculator & Form -->
+        <section id="invest" class="mb-16">
+            <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">Start Earning Today</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Calculator Form -->
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                    <h3 class="font-orbitron text-xl font-bold mb-6">Investment Calculator</h3>
+
+                    <div class="mb-6">
+                        <label class="block text-defi-muted mb-2">Deposit Amount (USDT)</label>
+                        <input type="number" id="amount" min="500" max="1000000" value="5000" 
+                            class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent">
+                        <p class="text-defi-muted text-sm mt-2">Minimum: 500 USDT. Maximum: 1,000,000 USDT</p>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-defi-muted mb-2">Lock Period: <span id="termValue">12</span> months</label>
+                        <input type="range" id="term" min="3" max="24" value="12" 
+                            class="w-full h-2 bg-defi-darker rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-defi-muted text-sm mt-2">
+                            <span>3 months</span>
+                            <span>24 months</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-defi-muted mb-2">Compounding</label>
+                        <select id="compound" class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent">
+                            <option value="monthly">Monthly Compounding</option>
+                            <option value="none">Simple Interest</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <button id="calculate-btn" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-lg transition-colors">
+                            Calculate
+                        </button>
+                        <button id="reset-btn" class="bg-defi-darker hover:bg-defi-darker/80 border border-defi-accent/20 font-bold py-3 px-4 rounded-lg transition-colors">
+                            Reset
+                        </button>
+                    </div>
+
+                    <div id="result" class="bg-defi-darker/60 p-4 rounded-lg border border-defi-accent/20">
+                        <p class="text-defi-muted text-center">Enter your investment details to see projected returns</p>
+                    </div>
+                </div>
+
+                <!-- Deposit Form -->
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                    <h3 class="font-orbitron text-xl font-bold mb-6">Make a Deposit</h3>
+
+                    <div class="mb-6">
+                        <label class="block text-defi-muted mb-2">Selected Amount (USDT)</label>
+                        <input type="text" id="selected-amount" readonly 
+                            class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-defi-muted">
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-defi-muted mb-2">Selected Lock Period</label>
+                        <input type="text" id="selected-term" readonly 
+                            class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-defi-muted">
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-defi-muted mb-2">Deposit Wallet Address</label>
+                        <div class="flex">
+                            <input type="text" id="wallet-address" value="0x49e33f878da28b7915f4387c13ff84ee4f2ed898" readonly 
+                                class="flex-grow bg-defi-darker border border-defi-accent/20 rounded-l-lg py-3 px-4 text-defi-muted text-xs md:text-base truncate">
+                            <button id="copy-address" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-r-lg transition-colors whitespace-nowrap">
+                                Copy
+                            </button>
+                        </div>
+                        <p class="text-defi-muted text-sm mt-2">Send only USDT (BEP-20) to this address</p>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-defi-muted mb-2">Transaction Hash</label>
+                        <input type="text" id="tx-hash" placeholder="Enter your transaction hash" 
+                            class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent">
+                    </div>
+
+                    <button id="submit-tx" class="w-full bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-lg transition-colors mb-4">
+                        Submit Transaction
+                    </button>
+
+                    <div id="success-message" class="hidden bg-defi-accent/20 border border-defi-accent text-defi-accent p-4 rounded-lg text-center">
+                        <i class="fas fa-check-circle mr-2"></i> Transaction confirmed! Your account has been credited.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="mb-16">
+            <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">About YieldFarm</h2>
+            <div class="bg-defi-card p-6 md:p-8 rounded-xl border border-defi-accent/20">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="font-orbitron text-2xl font-bold mb-6 text-defi-accent">Pioneering DeFi Since 2017</h3>
+                        <p class="text-defi-muted mb-6 text-lg leading-relaxed">
+                            YieldFarm Platform was established in 2017 as one of the pioneering yield farming protocols in the decentralized finance space. 
+                            Our vision has always been to democratize access to high-yield investment opportunities that were previously available only to 
+                            institutional investors and high-net-worth individuals.
+                        </p>
+                        <p class="text-defi-muted mb-6 text-lg leading-relaxed">
+                            Backed by industry leaders including Binance, KuCoin, Bitget, Gate.io, MEXC, OKX, and ByBit, we have built a robust infrastructure 
+                            that turns your USDT investments into exceptional returns. Our yield-farmed funds are strategically deployed across premier DeFi 
+                            protocols including Jupiter, Aave, PancakeSwap, Orca, Radium, and SushiSwap, providing liquidity and automated market making 
+                            while generating sustainable yields for our investors.
+                        </p>
+                        <div class="flex flex-wrap gap-4 mt-8">
+                            <div class="bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20">
+                                <span class="text-defi-accent font-bold">$500M+</span>
+                                <p class="text-defi-muted text-sm">Total Value Locked</p>
+                            </div>
+                            <div class="bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20">
+                                <span class="text-defi-accent font-bold">50K+</span>
+                                <p class="text-defi-muted text-sm">Active Farmers</p>
+                            </div>
+                            <div class="bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20">
+                                <span class="text-defi-accent font-bold">2017</span>
+                                <p class="text-defi-muted text-sm">Established</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <div class="w-full max-w-md h-64 bg-gradient-to-br from-defi-accent/20 to-defi-accent/5 rounded-xl border border-defi-accent/20 flex items-center justify-center">
+                            <i class="fas fa-chart-network text-defi-accent text-6xl opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="mb-16">
+            <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">What Our Farmers Say</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Testimonial 1 -->
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                    <div class="flex items-center mb-4">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" alt="Alex Johnson" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-bold">Alex Johnson</h4>
+                            <p class="text-defi-muted text-sm">Crypto Investor</p>
+                        </div>
+                    </div>
+                    <p class="text-defi-muted">"Earned over 120% APY on my 18-month lock. The platform is smooth and reliable."</p>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                    <div class="flex items-center mb-4">
+                        <img src="images/chen.jpeg" alt="Sarah Chen" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-bold">Sarah Chen</h4>
+                            <p class="text-defi-muted text-sm">DeFi Enthusiast</p>
+                        </div>
+                    </div>
+                    <p class="text-defi-muted">"Finally a yield platform that delivers what it promises. My investments have grown consistently."</p>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                    <div class="flex items-center mb-4">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt="Marcus Rodriguez" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-bold">Marcus Rodriguez</h4>
+                            <p class="text-defi-muted text-sm">Blockchain Developer</p>
+                        </div>
+                    </div>
+                    <p class="text-defi-muted">"The UI is intuitive and the returns are impressive. I've recommended this to all my crypto friends."</p>
+                </div>
+
+                <!-- Testimonial 4 -->
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                    <div class="flex items-center mb-4">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face" alt="Keisha Williams" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-bold">Keisha Williams</h4>
+                            <p class="text-defi-muted text-sm">Financial Advisor</p>
+                        </div>
+                    </div>
+                    <p class="text-defi-muted">"As a financial professional, I appreciate the transparency and consistent returns. A game-changer in DeFi."</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <p class="text-defi-muted">And 16 more happy investors growing their wealth with us</p>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section id="team" class="mb-16">
+            <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">Our DeFi Experts</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Team Member 1 -->
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20 text-center">
+                    <div class="w-32 h-32 mx-auto mb-4 bg-defi-darker rounded-full overflow-hidden border-2 border-defi-accent/30">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=face" alt="Dr. Elena Petrova" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-orbitron text-xl font-bold mb-2">Dr. Elena Petrova</h3>
+                    <p class="text-defi-accent mb-4">Chief Blockchain Architect</p>
+                    <p class="text-defi-muted mb-4">Former lead developer at a top-10 cryptocurrency project with 8+ years in blockchain development and smart contract auditing.</p>
+                    <div class="flex justify-center space-x-4 text-defi-accent">
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+
+                <!-- Team Member 2 -->
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20 text-center">
+                    <div class="w-32 h-32 mx-auto mb-4 bg-defi-darker rounded-full overflow-hidden border-2 border-defi-accent/30">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face" alt="James O'Connell" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-orbitron text-xl font-bold mb-2">James O'Connell</h3>
+                    <p class="text-defi-accent mb-4">DeFi Strategy Lead</p>
+                    <p class="text-defi-muted mb-4">12 years in quantitative finance and algorithmic trading. Built yield optimization strategies for institutional crypto funds.</p>
+                    <div class="flex justify-center space-x-4 text-defi-accent">
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-medium"></i></a>
+                    </div>
+                </div>
+
+                <!-- Team Member 3 -->
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20 text-center">
+                    <div class="w-32 h-32 mx-auto mb-4 bg-defi-darker rounded-full overflow-hidden border-2 border-defi-accent/30">
+                        <img src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=200&h=200&fit=crop&crop=face" alt="Sophie Reynolds" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-orbitron text-xl font-bold mb-2">Sophie Reynolds</h3>
+                    <p class="text-defi-accent mb-4">Head of Security</p>
+                    <p class="text-defi-muted mb-4">Cybersecurity expert specializing in blockchain protection. Previously secured over $2B in digital assets for exchanges and custodians.</p>
+                    <div class="flex justify-center space-x-4 text-defi-accent">
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-gitlab"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="mb-16">
+            <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
+            <div class="max-w-3xl mx-auto">
+                <!-- FAQ Item 1 -->
+                <div class="mb-4 border border-defi-accent/20 rounded-lg">
+                    <button class="faq-question w-full text-left p-4 bg-defi-card hover:bg-defi-card/80 rounded-lg transition-colors">
+                        <span class="font-bold">How are such high APY returns possible?</span>
+                        <i class="fas fa-chevron-down float-right"></i>
+                    </button>
+                    <div class="faq-answer p-4 bg-defi-darker/60 hidden">
+                        <p class="text-defi-muted">Our returns are generated through advanced DeFi strategies across multiple protocols including liquidity provision, lending, and yield optimization on established platforms. Returns scale with lock period to incentivize long-term staking.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="mb-4 border border-defi-accent/20 rounded-lg">
+                    <button class="faq-question w-full text-left p-4 bg-defi-card hover:bg-defi-card/80 rounded-lg transition-colors">
+                        <span class="font-bold">Is there any risk to my investment?</span>
+                        <i class="fas fa-chevron-down float-right"></i>
+                    </button>
+                    <div class="faq-answer p-4 bg-defi-darker/60 hidden">
+                        <p class="text-defi-muted">All DeFi investments carry some risk including smart contract vulnerability and market volatility. We implement multiple security measures including regular audits and insurance funds to protect investor capital.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="mb-4 border border-defi-accent/20 rounded-lg">
+                    <button class="faq-question w-full text-left p-4 bg-defi-card hover:bg-defi-card/80 rounded-lg transition-colors">
+                        <span class="font-bold">Can I withdraw my funds before the lock period ends?</span>
+                        <i class="fas fa-chevron-down float-right"></i>
+                    </button>
+                    <div class="faq-answer p-4 bg-defi-darker/60 hidden">
+                        <p class="text-defi-muted">Early withdrawal is not permitted as funds are deployed in strategies matching the selected lock period. This allows us to generate the highest possible returns for our farmers.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 bg-defi-card border-t border-defi-accent/20 py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                    <i class="fas fa-seedling text-defi-accent text-2xl"></i>
+                    <span class="font-orbitron text-xl font-bold">YieldFarm</span>
+                </div>
+                <div class="text-defi-muted text-center md:text-right">
+                    <p>&copy; 2017-2025 YieldFarm Group. All rights reserved.</p>
+                    <p class="text-sm mt-2">Built for yield farmers worldwide</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Profile dropdown toggle
+        document.getElementById('profile-dropdown-button').addEventListener('click', function() {
+            const dropdown = document.getElementById('profile-dropdown');
+            dropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profile-dropdown');
+            const button = document.getElementById('profile-dropdown-button');
+
+            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // FAQ toggle functionality
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const answer = button.nextElementSibling;
+                const icon = button.querySelector('i');
+
+                answer.classList.toggle('hidden');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            });
+        });
+
+        // Investment calculator functionality
+        document.getElementById('term').addEventListener('input', function() {
+            document.getElementById('termValue').textContent = this.value;
+        });
+
+        document.getElementById('calculate-btn').addEventListener('click', function() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const term = parseInt(document.getElementById('term').value);
+            const compound = document.getElementById('compound').value;
+
+            // Simple calculation for demonstration
+            const apy = 30 + (term - 3) * 7.4; // APY increases with term
+            let total;
+
+            if (compound === 'monthly') {
+                const monthlyRate = apy / 12 / 100;
+                total = amount * Math.pow(1 + monthlyRate, term);
+            } else {
+                total = amount * (1 + (apy / 100) * (term / 12));
+            }
+
+            const earnings = total - amount;
+
+            document.getElementById('result').innerHTML = `
+                <div class="text-center">
+                    <p class="text-defi-muted mb-2">Projected Returns for ${term} months</p>
+                    <p class="text-2xl font-bold text-defi-accent mb-2">${total.toFixed(2)} USDT</p>
+                    <p class="text-defi-muted">Total Earnings: <span class="text-defi-accent">${earnings.toFixed(2)} USDT</span></p>
+                    <p class="text-defi-muted text-sm mt-2">APY: ${apy.toFixed(1)}%</p>
+                </div>
+            `;
+
+            // Update deposit form
+            document.getElementById('selected-amount').value = amount + ' USDT';
+            document.getElementById('selected-term').value = term + ' months';
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', function() {
+            document.getElementById('amount').value = 5000;
+            document.getElementById('term').value = 12;
+            document.getElementById('termValue').textContent = 12;
+            document.getElementById('compound').value = 'monthly';
+            document.getElementById('result').innerHTML = '<p class="text-defi-muted text-center">Enter your investment details to see projected returns</p>';
+            document.getElementById('selected-amount').value = '';
+            document.getElementById('selected-term').value = '';
+        });
+
+        // Copy wallet address
+        document.getElementById('copy-address').addEventListener('click', function() {
+            const address = document.getElementById('wallet-address');
+            address.select();
+            document.execCommand('copy');
+
+            const originalText = this.textContent;
+            this.textContent = 'Copied!';
+            this.classList.add('bg-green-500');
+
+            setTimeout(() => {
+                this.textContent = originalText;
+                this.classList.remove('bg-green-500');
+            }, 2000);
+        });
+
+        // Submit transaction
+        document.getElementById('submit-tx').addEventListener('click', function() {
+            const txHash = document.getElementById('tx-hash').value;
+
+            if (txHash.trim() === '') {
+                alert('Please enter a transaction hash');
+                return;
+            }
+
+            // Show success message
+            document.getElementById('success-message').classList.remove('hidden');
+
+            // Reset form after 3 seconds
+            setTimeout(() => {
+                document.getElementById('tx-hash').value = '';
+                document.getElementById('success-message').classList.add('hidden');
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
