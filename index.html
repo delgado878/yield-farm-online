@@ -183,15 +183,15 @@
                 <a href="#about" class="border border-defi-accent text-defi-accent hover:bg-defi-accent/10 font-bold py-3 px-8 rounded-lg transition-colors text-center">Learn More</a>
             </div>
         </section>
-
-
-
-
+        
+        
+        
+        
 
         <!-- Dashboard Section -->
         <section id="dashboard" class="mb-16">
             <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">Investment Dashboard</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
                     <div class="flex justify-between items-start">
                         <div>
@@ -213,22 +213,26 @@
                 <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
                     <div class="flex justify-between items-start">
                         <div>
+                            
+                            
+                            
+                            
+                            
                             <p class="text-defi-muted">Total Earnings</p>
-
-
-
-
-
-
-                            <p class="text-3xl font-bold mt-2" id="earnings-display">562.940 USDT</p>
+                            <p class="text-3xl font-bold mt-2" id="earnings-display">307.010 USDT</p>
                         </div>
-
-
-
-
-
-
                         <i class="fas fa-coins text-defi-accent text-2xl"></i>
+                    </div>
+                </div>
+                <!-- NEW: Total Balance Card -->
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-defi-muted">Total Balance</p>
+                            <p class="text-3xl font-bold mt-2" id="total-balance-display">877.010 USDT</p>
+                            <p class="text-sm text-defi-accent mt-1" id="balance-breakdown"></p>
+                        </div>
+                        <i class="fas fa-chart-pie text-defi-accent text-2xl"></i>
                     </div>
                 </div>
             </div>
@@ -576,6 +580,42 @@
                 icon.classList.toggle('fa-chevron-down');
                 icon.classList.toggle('fa-chevron-up');
             });
+        });
+
+        // Initial investment and earnings values
+        const initialInvestment = ;
+        const manualEarnings = ;
+
+        // Calculate and display total balance
+        function calculateTotalBalance() {
+            const totalBalance = initialInvestment + manualEarnings;
+            
+            // Update the total balance display
+            document.getElementById('total-balance-display').textContent = totalBalance.toFixed(3) + ' USDT';
+            
+            // Update the breakdown
+            document.getElementById('balance-breakdown').textContent = 
+                `${initialInvestment.toFixed(3)} + ${manualEarnings.toFixed(3)}`;
+        }
+
+        // Function to update earnings manually (for daily updates)
+        function updateEarnings(newEarnings) {
+            // You would call this function daily with the updated earnings
+            manualEarnings = newEarnings;
+            document.getElementById('earnings-display').textContent = manualEarnings.toFixed(3) + ' USDT';
+            calculateTotalBalance();
+        }
+
+        // Function to update initial investment (if needed)
+        function updateInitialInvestment(newInvestment) {
+            initialInvestment = newInvestment;
+            document.getElementById('balance-display').textContent = initialInvestment.toFixed(3) + ' USDT';
+            calculateTotalBalance();
+        }
+
+        // Calculate initial total balance on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateTotalBalance();
         });
 
         // Investment calculator functionality
