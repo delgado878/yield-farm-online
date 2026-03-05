@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yield Farm Platform | System Maintenance Notice</title>
+    <title>YieldFarm | High-Yield USDT Investment</title>
 
+    <!-- External CSS (placeholder - style kept inline) -->
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -29,368 +30,364 @@
                     fontFamily: {
                         'orbitron': ['Orbitron', 'sans-serif'],
                         'mono': ['Roboto Mono', 'monospace'],
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     }
                 }
             }
         }
     </script>
-
     <style>
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-        .defi-bg {
-            background: radial-gradient(ellipse at center, #0f172a 0%, #020617 100%);
-        }
+        /* Additional styles for animations and FAQ */
         .crypto-grid {
-            background-image: 
-                linear-gradient(rgba(16, 185, 129, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px);
+            background-image: radial-gradient(circle at 1px 1px, #1e293b 1px, transparent 0);
             background-size: 50px 50px;
+            opacity: 0.2;
         }
-        .maintenance-pulse {
-            animation: maintenance-pulse 2s ease-in-out infinite;
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
         }
-        @keyframes maintenance-pulse {
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes pulse-slow {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+            50% { opacity: 0.4; }
         }
-
-        /* Mobile optimizations */
-        @media (max-width: 640px) {
-            .mobile-padding {
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-            .mobile-text-lg {
-                font-size: 1.125rem;
-            }
-            .mobile-text-xl {
-                font-size: 1.25rem;
-            }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s ease-in-out infinite;
         }
-
-        /* Improve touch targets for mobile */
-        .touch-target {
-            min-height: 44px;
-            min-width: 44px;
+        /* Custom range slider */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+            border: 2px solid #020617;
         }
-
-        /* Better form inputs on mobile */
-        input, select, textarea {
-            font-size: 16px; /* Prevents zoom on iOS */
+        input[type=range]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+            border: 2px solid #020617;
         }
     </style>
 </head>
 <body class="defi-bg text-white font-mono min-h-screen">
     <!-- Animated background elements -->
     <div class="fixed inset-0 crypto-grid z-0"></div>
-    <div class="fixed top-1/4 left-4 sm:left-10 w-3 h-3 sm:w-4 sm:h-4 bg-defi-accent rounded-full opacity-20 animate-float"></div>
-    <div class="fixed top-1/3 right-4 sm:right-20 w-4 h-4 sm:w-6 sm:h-6 bg-defi-accent rounded-full opacity-30 animate-float" style="animation-delay: -2s;"></div>
-    <div class="fixed bottom-1/4 left-1/4 w-2 h-2 sm:w-3 sm:h-3 bg-defi-accent rounded-full opacity-40 animate-float" style="animation-delay: -4s;"></div>
+    <div class="fixed top-1/4 left-10 w-4 h-4 bg-defi-accent rounded-full opacity-20 animate-float"></div>
+    <div class="fixed top-1/3 right-20 w-6 h-6 bg-defi-accent rounded-full opacity-30 animate-float" style="animation-delay: -2s;"></div>
+    <div class="fixed bottom-1/4 left-1/4 w-3 h-3 bg-defi-accent rounded-full opacity-40 animate-float" style="animation-delay: -4s;"></div>
 
-    <!-- Header -->
+    <!-- Header & Navigation -->
     <header class="relative z-10 bg-defi-card/80 backdrop-blur-md border-b border-defi-accent/20">
-        <div class="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
+        <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-2">
-                    <i class="fas fa-seedling text-defi-accent text-xl sm:text-2xl"></i>
-                    <span class="font-orbitron text-lg sm:text-xl font-bold">Yield Farm</span>
+                    <i class="fas fa-seedling text-defi-accent text-2xl"></i>
+                    <span class="font-orbitron text-xl font-bold">YieldFarm</span>
                 </div>
-                <div class="flex items-center space-x-2 bg-amber-500/20 border border-amber-500/40 px-2 sm:px-3 py-1 rounded-lg">
-                    <i class="fas fa-tools text-amber-400 text-xs sm:text-sm"></i>
-                    <span class="text-amber-300 text-xs sm:text-sm font-bold">MAINTENANCE</span>
+
+                <!-- Desktop Navigation (simplified) -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#about" class="hover:text-defi-accent transition-colors">About</a>
+                    <a href="#faq" class="hover:text-defi-accent transition-colors">FAQ</a>
+                </nav>
+
+                <!-- Auth Buttons (login/signup) -->
+                <div class="flex items-center space-x-4" id="auth-buttons">
+                    <button onclick="openAuthModal('login')" class="border border-defi-accent text-defi-accent hover:bg-defi-accent/10 font-bold py-2 px-6 rounded-lg transition-colors">
+                        Login
+                    </button>
+                    <button onclick="handleSignupAttempt()" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-2 px-6 rounded-lg transition-colors">
+                        Sign Up
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden text-defi-accent">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu (hidden by default) -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-defi-accent/20 pt-4">
+                <div class="flex flex-col space-y-4">
+                    <a href="#about" class="hover:text-defi-accent transition-colors">About</a>
+                    <a href="#faq" class="hover:text-defi-accent transition-colors">FAQ</a>
+                    <div class="pt-4 border-t border-defi-accent/20">
+                        <button onclick="openAuthModal('login')" class="w-full text-left py-2 hover:text-defi-accent">Login</button>
+                        <button onclick="handleSignupAttempt()" class="w-full text-left py-2 hover:text-defi-accent">Sign Up</button>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="relative z-10 container mx-auto px-3 sm:px-4 py-6 sm:py-8">
-        <!-- Maintenance Hero Section -->
-        <section class="text-center py-8 sm:py-16 mb-6 sm:mb-8">
-            <div class="max-w-4xl mx-auto mobile-padding">
-                <div class="maintenance-pulse mb-6 sm:mb-8">
-                    <i class="fas fa-tools text-defi-accent text-4xl sm:text-6xl mb-3 sm:mb-4"></i>
-                </div>
-                <h1 class="font-orbitron text-2xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
-                    System <span class="text-defi-accent">Maintenance</span>
-                </h1>
-                <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
-                    <div class="flex items-center justify-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-                        <i class="fas fa-exclamation-triangle text-amber-400 text-lg sm:text-xl"></i>
-                        <p class="text-amber-300 font-bold text-base sm:text-lg mobile-text-lg">Scheduled System Upgrade</p>
+    <!-- Login Modal (email/password with show/hide) -->
+    <div id="login-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-defi-card rounded-xl border border-defi-accent/20 w-full max-w-md relative">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-defi-muted hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+
+            <div class="p-6">
+                <h3 class="font-orbitron text-xl font-bold mb-6 text-center">Login to Your Account</h3>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="mb-4">
+                        <label class="block text-defi-muted mb-2">Email</label>
+                        <input type="email" id="loginEmail" required 
+                            class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent">
                     </div>
-                    <p class="text-amber-200 text-sm sm:text-base">We are enhancing your Yield Farming experience</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Maintenance Information -->
-        <section class="mb-12 sm:mb-16">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto mobile-padding">
-                <!-- Maintenance Details Card -->
-                <div class="bg-defi-card p-4 sm:p-6 lg:p-8 rounded-xl border border-defi-accent/20">
-                    <h2 class="font-orbitron text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-defi-accent">⚠️ System Upgrade Notice</h2>
-
-                    <div class="space-y-4 sm:space-y-6">
-                        <div class="flex items-start space-x-3 sm:space-x-4">
-                            <i class="fas fa-rocket text-defi-accent mt-1 text-sm sm:text-base"></i>
-                            <div class="flex-1">
-                                <h3 class="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Enhanced Platform Performance & Security</h3>
-                                <p class="text-defi-muted text-xs sm:text-sm">We are performing a scheduled system upgrade to enhance performance, security, and reliability across the platform.</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-3 sm:space-x-4">
-                            <i class="fas fa-pause-circle text-defi-accent mt-1 text-sm sm:text-base"></i>
-                            <div class="flex-1">
-                                <h3 class="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Temporary Service Pause</h3>
-                                <p class="text-defi-muted text-xs sm:text-sm">During this maintenance period, user access to dashboards, deposits, and withdrawal activities will be temporarily paused.</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-3 sm:space-x-4">
-                            <i class="fas fa-lock text-defi-accent mt-1 text-sm sm:text-base"></i>
-                            <div class="flex-1">
-                                <h3 class="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Your Assets Are Secure</h3>
-                                <p class="text-defi-muted text-xs sm:text-sm">All assets remain securely stored in our smart contracts. The yield farming continues and your farmed USDT will be credited to your account after restoration.</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-3 sm:space-x-4">
-                            <i class="fas fa-clock text-defi-accent mt-1 text-sm sm:text-base"></i>
-                            <div class="flex-1">
-                                <h3 class="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Expected Timeline</h3>
-                                <p class="text-defi-muted text-xs sm:text-sm">We expect full service restoration in less than 72 hours. Updates will be shared through our email service.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 sm:mt-8 p-3 sm:p-4 bg-defi-darker/60 rounded-lg border border-defi-accent/20">
-                        <p class="text-defi-muted text-center text-xs sm:text-sm">
-                            <i class="fas fa-info-circle text-defi-accent mr-1 sm:mr-2"></i>
-                            No action is required from your end. Thank you for your understanding and continued trust. We apologize for any inconveniences caused.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Contact Form Card -->
-                <div class="bg-defi-card p-4 sm:p-6 lg:p-8 rounded-xl border border-defi-accent/20">
-                    <h2 class="font-orbitron text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-defi-accent">Contact Support</h2>
-                    <p class="text-defi-muted mb-4 sm:mb-6 text-xs sm:text-sm">For urgent inquiries during maintenance, please use the form below:</p>
-
-                    <form id="contact-form" action="https://formspree.io/f/xyznbkeb" method="POST" class="space-y-4 sm:space-y-6">
-                        <div>
-                            <label for="name" class="block text-defi-muted mb-1 sm:mb-2 text-sm sm:text-base">Full Name *</label>
-                            <input type="text" id="name" name="name" required 
-                                class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-2 sm:py-3 px-3 sm:px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent text-sm sm:text-base touch-target"
-                                placeholder="Enter your full name">
-                        </div>
-
-                        <div>
-                            <label for="email" class="block text-defi-muted mb-1 sm:mb-2 text-sm sm:text-base">Email Address *</label>
-                            <input type="email" id="email" name="email" required 
-                                class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-2 sm:py-3 px-3 sm:px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent text-sm sm:text-base touch-target"
-                                placeholder="Enter your email address">
-                        </div>
-
-                        <div>
-                            <label for="subject" class="block text-defi-muted mb-1 sm:mb-2 text-sm sm:text-base">Inquiry Type *</label>
-                            <select id="subject" name="subject" required 
-                                class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-2 sm:py-3 px-3 sm:px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent text-sm sm:text-base touch-target">
-                                <option value="">Select inquiry type</option>
-                                <option value="Account Access">Account Access Issue</option>
-                                <option value="Funds Inquiry">Funds Inquiry</option>
-                                <option value="Technical Support">Technical Support</option>
-                                <option value="General Question">General Question</option>
-                                <option value="Partnership">Partnership Inquiry</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label for="message" class="block text-defi-muted mb-1 sm:mb-2 text-sm sm:text-base">Message *</label>
-                            <textarea id="message" name="message" required rows="4" sm:rows="5"
-                                class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-2 sm:py-3 px-3 sm:px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent resize-none text-sm sm:text-base touch-target"
-                                placeholder="Please describe your inquiry in detail..."></textarea>
-                        </div>
-
-                        <input type="hidden" name="_replyto" value="yieldfarm.online@gmail.com">
-                        <input type="hidden" name="_subject" value="YieldFarm Maintenance Inquiry">
-
-                        <button type="submit" id="submit-btn"
-                            class="w-full bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 touch-target text-sm sm:text-base">
-                            <i class="fas fa-paper-plane text-xs sm:text-sm"></i>
-                            <span>Send Message</span>
+                    <div class="mb-6 relative">
+                        <label class="block text-defi-muted mb-2">Password</label>
+                        <input type="password" id="loginPassword" required 
+                            class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent pr-12">
+                        <button type="button" onclick="togglePasswordVisibility('loginPassword', this)" class="absolute right-3 bottom-3 text-defi-muted hover:text-defi-accent">
+                            <i class="far fa-eye"></i>
                         </button>
+                    </div>
+                    <div id="loginError" class="mb-4 text-red-400 text-sm text-center hidden">
+                        <i class="fas fa-exclamation-circle mr-1"></i> Wrong login details
+                    </div>
+                    <button type="submit" class="w-full bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-lg transition-colors">
+                        Login
+                    </button>
+                </form>
+                <p class="text-defi-muted text-center mt-4">
+                    Don't have an account? <button onclick="handleSignupAttempt()" class="text-defi-accent hover:underline">Sign Up</button>
+                </p>
+            </div>
+        </div>
+    </div>
 
-                        <p class="text-defi-muted text-xs text-center">
-                            <i class="fas fa-shield-alt mr-1"></i>
-                            Messages are securely transmitted through our mail host.
+    <!-- Signup response toast (non-modal, just a small popup) -->
+    <div id="signup-toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-defi-card border border-defi-accent/20 text-defi-muted px-6 py-3 rounded-lg shadow-lg z-50 hidden items-center space-x-3">
+        <i class="fas fa-globe text-defi-accent"></i>
+        <span>we no longer serve clients in your geolocation</span>
+    </div>
+
+    <main class="relative z-10 container mx-auto px-4 py-8">
+        <!-- Hero Section (clean, no dashboard numbers) -->
+        <section class="text-center py-16 mb-8">
+            <h1 class="font-orbitron text-4xl md:text-6xl font-bold mb-6">Yield <span class="text-defi-accent">Farming Reinvented</span> </h1>
+            <p class="text-defi-muted text-xl max-w-2xl mx-auto mb-8">Earn 30% to 200% APY on your USDT deposits. The future of decentralized finance is here.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#about" class="border border-defi-accent text-defi-accent hover:bg-defi-accent/10 font-bold py-3 px-8 rounded-lg transition-colors">Learn More</a>
+            </div>
+        </section>
+
+        <!-- About Section (cleaned, no investment dashboard) -->
+        <section id="about" class="mb-16">
+            <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">About YieldFarm</h2>
+            <div class="bg-defi-card p-8 rounded-xl border border-defi-accent/20">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="font-orbitron text-2xl font-bold mb-6 text-defi-accent">Pioneering DeFi Since 2017</h3>
+                        <p class="text-defi-muted mb-6 text-lg leading-relaxed">
+                            YieldFarm Platform was established in 2017 as one of the pioneering yield farming protocols in the decentralized finance space. 
+                            Our vision has always been to democratize access to high-yield investment opportunities.
                         </p>
-                    </form>
-
-                    <div id="form-success" class="hidden mt-3 sm:mt-4 bg-defi-accent/20 border border-defi-accent text-defi-accent p-3 sm:p-4 rounded-lg text-center text-xs sm:text-sm">
-                        <i class="fas fa-check-circle mr-1 sm:mr-2"></i> 
-                        <span id="success-message">Message sent to the support team successfully! We will respond within 24 hours.</span>
-                    </div>
-
-                    <div id="form-error" class="hidden mt-3 sm:mt-4 bg-red-500/20 border border-red-500 text-red-400 p-3 sm:p-4 rounded-lg text-center text-xs sm:text-sm">
-                        <i class="fas fa-exclamation-circle mr-1 sm:mr-2"></i>
-                        <span id="error-message">There was an error sending your message. Please try again.</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Status Timeline -->
-        <section class="mb-12 sm:mb-16 max-w-4xl mx-auto mobile-padding">
-            <div class="bg-defi-card p-4 sm:p-6 lg:p-8 rounded-xl border border-defi-accent/20">
-                <h2 class="font-orbitron text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-defi-accent text-center">Maintenance Progress</h2>
-
-                <div class="space-y-4 sm:space-y-6">
-                    <div class="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-defi-accent/10 rounded-lg border border-defi-accent/20">
-                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-defi-accent rounded-full animate-pulse-slow flex-shrink-0"></div>
-                        <div class="flex-1 min-w-0">
-                            <h3 class="font-bold text-sm sm:text-base">Security Enhancements</h3>
-                            <p class="text-defi-muted text-xs sm:text-sm truncate">Implementing advanced security protocols</p>
-                        </div>
-                        <div class="flex-shrink-0 ml-2">
-                            <span class="bg-defi-accent text-defi-darker text-xs font-bold px-2 py-1 rounded">IN PROGRESS</span>
+                        <p class="text-defi-muted mb-6 text-lg leading-relaxed">
+                            Backed by industry leaders, we have built a robust infrastructure that turns your USDT investments into exceptional returns.
+                        </p>
+                        <div class="flex flex-wrap gap-4 mt-8">
+                            <div class="bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20">
+                                <span class="text-defi-accent font-bold">$500M+</span>
+                                <p class="text-defi-muted text-sm">Total Value Locked</p>
+                            </div>
+                            <div class="bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20">
+                                <span class="text-defi-accent font-bold">50K+</span>
+                                <p class="text-defi-muted text-sm">Active Farmers</p>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-defi-darker/40 rounded-lg border border-defi-muted/20">
-                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-defi-muted rounded-full flex-shrink-0"></div>
-                        <div class="flex-1 min-w-0">
-                            <h3 class="font-bold text-defi-muted text-sm sm:text-base">Performance Optimization</h3>
-                            <p class="text-defi-muted text-xs sm:text-sm truncate">Upgrading system infrastructure</p>
-                        </div>
-                        <div class="flex-shrink-0 ml-2">
-                            <span class="bg-defi-muted text-defi-darker text-xs font-bold px-2 py-1 rounded">PENDING</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-defi-darker/40 rounded-lg border border-defi-muted/20">
-                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-defi-muted rounded-full flex-shrink-0"></div>
-                        <div class="flex-1 min-w-0">
-                            <h3 class="font-bold text-defi-muted text-sm sm:text-base">System Testing</h3>
-                            <p class="text-defi-muted text-xs sm:text-sm truncate">Comprehensive testing before relaunch</p>
-                        </div>
-                        <div class="flex-shrink-0 ml-2">
-                            <span class="bg-defi-muted text-defi-darker text-xs font-bold px-2 py-1 rounded">PENDING</span>
+                    <div class="flex justify-center">
+                        <div class="w-full max-w-md h-64 bg-gradient-to-br from-defi-accent/20 to-defi-accent/5 rounded-xl border border-defi-accent/20 flex items-center justify-center">
+                            <i class="fas fa-chart-network text-defi-accent text-6xl opacity-50"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Quick Info Cards -->
-        <section class="max-w-6xl mx-auto mobile-padding">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-                <div class="bg-defi-card p-4 sm:p-6 rounded-xl border border-defi-accent/20 text-center">
-                    <i class="fas fa-shield-alt text-defi-accent text-2xl sm:text-3xl mb-3 sm:mb-4"></i>
-                    <h3 class="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Assets Protected</h3>
-                    <p class="text-defi-muted text-xs sm:text-sm">All funds secured in audited smart contracts</p>
+        <!-- Team Section (shortened, but kept for aesthetics) -->
+        <section id="team" class="mb-16">
+            <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">Our DeFi Experts</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Team Member 1 -->
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20 text-center">
+                    <div class="w-32 h-32 mx-auto mb-4 bg-defi-darker rounded-full overflow-hidden border-2 border-defi-accent/30">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=face" alt="Dr. Elena Petrova" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-orbitron text-xl font-bold mb-2">Dr. Elena Petrova</h3>
+                    <p class="text-defi-accent mb-4">Chief Blockchain Architect</p>
                 </div>
-
-                <div class="bg-defi-card p-4 sm:p-6 rounded-xl border border-defi-accent/20 text-center">
-                    <i class="fas fa-chart-line text-defi-accent text-2xl sm:text-3xl mb-3 sm:mb-4"></i>
-                    <h3 class="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Yield Farming Continues</h3>
-                    <p class="text-defi-muted text-xs sm:text-sm">USDT yield generation active during maintenance</p>
+                <!-- Team Member 2 -->
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20 text-center">
+                    <div class="w-32 h-32 mx-auto mb-4 bg-defi-darker rounded-full overflow-hidden border-2 border-defi-accent/30">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face" alt="James O'Connell" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-orbitron text-xl font-bold mb-2">James O'Connell</h3>
+                    <p class="text-defi-accent mb-4">DeFi Strategy Lead</p>
                 </div>
+                <!-- Team Member 3 -->
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20 text-center">
+                    <div class="w-32 h-32 mx-auto mb-4 bg-defi-darker rounded-full overflow-hidden border-2 border-defi-accent/30">
+                        <img src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=200&h=200&fit=crop&crop=face" alt="Sophie Reynolds" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-orbitron text-xl font-bold mb-2">Sophie Reynolds</h3>
+                    <p class="text-defi-accent mb-4">Head of Security</p>
+                </div>
+            </div>
+        </section>
 
-                <div class="bg-defi-card p-4 sm:p-6 rounded-xl border border-defi-accent/20 text-center">
-                    <i class="fas fa-history text-defi-accent text-2xl sm:text-3xl mb-3 sm:mb-4"></i>
-                    <h3 class="font-bold mb-1 sm:mb-2 text-sm sm:text-base">Quick Restoration</h3>
-                    <p class="text-defi-muted text-xs sm:text-sm">Expected completion within 72 hours</p>
+        <!-- FAQ Section (minimal, functional) -->
+        <section id="faq" class="mb-16">
+            <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
+            <div class="max-w-3xl mx-auto">
+                <!-- FAQ Item 1 -->
+                <div class="mb-4 border border-defi-accent/20 rounded-lg">
+                    <button class="faq-question w-full text-left p-4 bg-defi-card hover:bg-defi-card/80 rounded-lg transition-colors">
+                        <span class="font-bold">How are such high APY returns possible?</span>
+                        <i class="fas fa-chevron-down float-right"></i>
+                    </button>
+                    <div class="faq-answer p-4 bg-defi-darker/60 hidden">
+                        <p class="text-defi-muted">Our returns are generated through advanced DeFi strategies across multiple protocols including liquidity provision, lending, and yield optimization.</p>
+                    </div>
+                </div>
+                <!-- FAQ Item 2 -->
+                <div class="mb-4 border border-defi-accent/20 rounded-lg">
+                    <button class="faq-question w-full text-left p-4 bg-defi-card hover:bg-defi-card/80 rounded-lg transition-colors">
+                        <span class="font-bold">Is there any risk to my investment?</span>
+                        <i class="fas fa-chevron-down float-right"></i>
+                    </button>
+                    <div class="faq-answer p-4 bg-defi-darker/60 hidden">
+                        <p class="text-defi-muted">All DeFi investments carry some risk including smart contract vulnerability and market volatility. We implement multiple security measures.</p>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
     <!-- Footer -->
-    <footer class="relative z-10 bg-defi-card border-t border-defi-accent/20 py-6 sm:py-8 mt-12 sm:mt-16">
-        <div class="container mx-auto px-3 sm:px-4">
+    <footer class="relative z-10 bg-defi-card border-t border-defi-accent/20 py-8">
+        <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="flex items-center space-x-2 mb-3 sm:mb-4 md:mb-0">
-                    <i class="fas fa-seedling text-defi-accent text-xl sm:text-2xl"></i>
-                    <span class="font-orbitron text-lg sm:text-xl font-bold">Yield Farm Platform ltd</span>
+                <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                    <i class="fas fa-seedling text-defi-accent text-2xl"></i>
+                    <span class="font-orbitron text-xl font-bold">YieldFarm</span>
                 </div>
                 <div class="text-defi-muted text-center md:text-right">
-                    <p class="text-xs sm:text-sm">&copy; 2017-2025 Yield Farm Group. All rights reserved.</p>
-                    <p class="text-xs mt-1 sm:mt-2">Enhanced security upgrades in progress</p>
+                    <p>&copy; 2017-2026 YieldFarm LLC. All rights reserved.</p>
+                    <p class="text-sm mt-2">Built for yield farmers worldwide</p>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- JavaScript: all functionality -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 YieldFarm Maintenance Page Loaded');
+        // ========== UI Helpers ==========
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
 
-            const contactForm = document.getElementById('contact-form');
-            const submitBtn = document.getElementById('submit-btn');
-            const formSuccess = document.getElementById('form-success');
-            const formError = document.getElementById('form-error');
+        // ========== Login Modal ==========
+        const loginModal = document.getElementById('login-modal');
+        const loginError = document.getElementById('loginError');
 
-            if (contactForm) {
-                contactForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
+        function openAuthModal(type) {
+            if (type === 'login') {
+                loginModal.classList.remove('hidden');
+                // reset fields and error
+                document.getElementById('loginForm').reset();
+                loginError.classList.add('hidden');
+            }
+        }
 
-                    // Show loading state
-                    const originalText = submitBtn.innerHTML;
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
-                    submitBtn.disabled = true;
+        function closeLoginModal() {
+            loginModal.classList.add('hidden');
+        }
 
-                    try {
-                        // Use Formspree's native form submission
-                        const formData = new FormData(contactForm);
+        // Handle login: always show error
+        function handleLogin(event) {
+            event.preventDefault();
+            // Show error message (always wrong)
+            loginError.classList.remove('hidden');
+            // Optional: clear password field? not necessary, but keep it
+        }
 
-                        const response = await fetch(contactForm.action, {
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                                'Accept': 'application/json'
-                            }
-                        });
+        // ========== Signup ==========
+        const signupToast = document.getElementById('signup-toast');
+        let toastTimeout;
 
-                        if (response.ok) {
-                            // Success
-                            contactForm.reset();
-                            formSuccess.classList.remove('hidden');
-                            formError.classList.add('hidden');
+        function handleSignupAttempt() {
+            // Close login modal if open
+            loginModal.classList.add('hidden');
+            
+            // Show toast
+            signupToast.classList.remove('hidden');
+            
+            // Hide after 3 seconds
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                signupToast.classList.add('hidden');
+            }, 3000);
+        }
 
-                            // Hide success message after 5 seconds
-                            setTimeout(() => {
-                                formSuccess.classList.add('hidden');
-                            }, 5000);
-                        } else {
-                            // Error
-                            throw new Error('Form submission failed');
-                        }
-                    } catch (error) {
-                        // Show error message
-                        formError.classList.remove('hidden');
-                        formSuccess.classList.add('hidden');
+        // ========== Mobile Menu Toggle ==========
+        const mobileMenuBtn = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
 
-                        // Hide error message after 5 seconds
-                        setTimeout(() => {
-                            formError.classList.add('hidden');
-                        }, 5000);
-                    } finally {
-                        // Restore button
-                        submitBtn.innerHTML = originalText;
-                        submitBtn.disabled = false;
-                    }
-                });
+        // ========== FAQ Accordion ==========
+        document.querySelectorAll('.faq-question').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const icon = this.querySelector('i');
+                answer.classList.toggle('hidden');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            });
+        });
+
+        // ========== Remove all dashboard / investment / calculator elements ==========
+        // Additionally, ensure any leftover dynamic IDs are not referenced.
+        // The HTML above has been stripped of dashboard and investment sections.
+        // Also remove any potential user section leftovers: we don't have them.
+        // Just to be safe, if any script tries to access those elements, we ignore.
+        // No investment logic is included.
+        
+        // Close modal if clicked outside? optional.
+        window.addEventListener('click', (e) => {
+            if (e.target === loginModal) {
+                closeLoginModal();
             }
         });
+
+        // Override any stray onclick that might reference removed functions (like showAuthModal)
+        // We already replaced them with openAuthModal and handleSignupAttempt.
+        // Also ensure no old references.
+        window.showAuthModal = undefined; // just in case
     </script>
 </body>
 </html>
