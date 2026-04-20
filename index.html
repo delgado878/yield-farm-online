@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YieldFarm | High-Yield USDT Investment</title>
+    <title>YieldFarm | High-Yield USDT Farming</title>
 
-    <!-- External CSS (placeholder - style kept inline) -->
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -14,6 +13,57 @@
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Roboto+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js for earnings chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s ease-in-out infinite;
+        }
+
+        .crypto-grid {
+            background-image: 
+                linear-gradient(rgba(16, 185, 129, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .section-padding {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+
+        .profile-dropdown {
+            transition: all 0.3s ease;
+        }
+
+        /* Modal styles */
+        .modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
 
     <script>
         tailwind.config = {
@@ -35,50 +85,8 @@
             }
         }
     </script>
-    <style>
-        /* Additional styles for animations and FAQ */
-        .crypto-grid {
-            background-image: radial-gradient(circle at 1px 1px, #1e293b 1px, transparent 0);
-            background-size: 50px 50px;
-            opacity: 0.2;
-        }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0px); }
-        }
-        .animate-float {
-            animation: float 6s ease-in-out infinite;
-        }
-        @keyframes pulse-slow {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-        .animate-pulse-slow {
-            animation: pulse-slow 3s ease-in-out infinite;
-        }
-        /* Custom range slider */
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: #10b981;
-            cursor: pointer;
-            border: 2px solid #020617;
-        }
-        input[type=range]::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: #10b981;
-            cursor: pointer;
-            border: 2px solid #020617;
-        }
-    </style>
 </head>
-<body class="defi-bg text-white font-mono min-h-screen">
+<body class="bg-defi-dark text-white font-mono min-h-screen">
     <!-- Animated background elements -->
     <div class="fixed inset-0 crypto-grid z-0"></div>
     <div class="fixed top-1/4 left-10 w-4 h-4 bg-defi-accent rounded-full opacity-20 animate-float"></div>
@@ -94,20 +102,58 @@
                     <span class="font-orbitron text-xl font-bold">YieldFarm</span>
                 </div>
 
-                <!-- Desktop Navigation (simplified) -->
-                <nav class="hidden md:flex space-x-8">
+                <!-- Desktop Navigation - shown when logged in -->
+                <nav id="desktop-nav" class="hidden md:flex space-x-8">
+                    <a href="#dashboard" class="hover:text-defi-accent transition-colors">Dashboard</a>
+                    <a href="#invest" class="hover:text-defi-accent transition-colors">Invest</a>
                     <a href="#about" class="hover:text-defi-accent transition-colors">About</a>
+                    <a href="#team" class="hover:text-defi-accent transition-colors">Team</a>
+                    <a href="#testimonials" class="hover:text-defi-accent transition-colors">Testimonials</a>
                     <a href="#faq" class="hover:text-defi-accent transition-colors">FAQ</a>
                 </nav>
 
-                <!-- Auth Buttons (login/signup) -->
-                <div class="flex items-center space-x-4" id="auth-buttons">
-                    <button onclick="openAuthModal('login')" class="border border-defi-accent text-defi-accent hover:bg-defi-accent/10 font-bold py-2 px-6 rounded-lg transition-colors">
-                        Login
+                <!-- Auth Buttons (when logged out) -->
+                <div id="auth-buttons" class="flex space-x-3">
+                    <button id="login-btn-header" class="border border-defi-accent text-defi-accent hover:bg-defi-accent/10 px-4 py-2 rounded-lg transition-colors">Login</button>
+                    <button id="signup-btn-header" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold px-4 py-2 rounded-lg transition-colors">Sign Up</button>
+                </div>
+
+                <!-- User Profile Dropdown (when logged in) -->
+                <div id="user-section" class="hidden relative">
+                    <button id="profile-dropdown-button" class="flex items-center space-x-3 bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20 hover:bg-defi-darker transition-colors">
+                        <div class="w-3 h-3 bg-defi-accent rounded-full animate-pulse-slow"></div>
+                        <span id="user-email-display" class="text-sm max-w-[150px] truncate">user@example.com</span>
+                        <i class="fas fa-chevron-down text-defi-accent text-xs"></i>
                     </button>
-                    <button onclick="handleSignupAttempt()" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-2 px-6 rounded-lg transition-colors">
-                        Sign Up
-                    </button>
+
+                    <div id="profile-dropdown" class="profile-dropdown absolute right-0 mt-2 w-64 bg-defi-card rounded-xl border border-defi-accent/20 shadow-lg z-20 hidden">
+                        <div class="p-4 border-b border-defi-accent/20">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-defi-accent/20 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-defi-accent"></i>
+                                </div>
+                                <div>
+                                    <p id="dropdown-email" class="font-bold truncate">user@example.com</p>
+                                    <p class="text-defi-muted text-sm">Premium Investor</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-2">
+                            <a href="#dashboard" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-defi-darker/60 transition-colors">
+                                <i class="fas fa-tachometer-alt text-defi-accent w-5"></i>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="#invest" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-defi-darker/60 transition-colors">
+                                <i class="fas fa-chart-line text-defi-accent w-5"></i>
+                                <span>Invest</span>
+                            </a>
+                            <div class="border-t border-defi-accent/20 my-2"></div>
+                            <button id="logout-btn" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-defi-darker/60 transition-colors text-red-400 hover:text-red-300 w-full text-left">
+                                <i class="fas fa-sign-out-alt w-5"></i>
+                                <span>Logout</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Mobile Menu Button -->
@@ -116,87 +162,167 @@
                 </button>
             </div>
 
-            <!-- Mobile Menu (hidden by default) -->
+            <!-- Mobile Menu -->
             <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-defi-accent/20 pt-4">
-                <div class="flex flex-col space-y-4">
-                    <a href="#about" class="hover:text-defi-accent transition-colors">About</a>
-                    <a href="#faq" class="hover:text-defi-accent transition-colors">FAQ</a>
+                <div id="mobile-nav-links" class="flex flex-col space-y-4 hidden">
+                    <a href="#dashboard" class="hover:text-defi-accent transition-colors py-2">Dashboard</a>
+                    <a href="#invest" class="hover:text-defi-accent transition-colors py-2">Invest</a>
+                    <a href="#about" class="hover:text-defi-accent transition-colors py-2">About</a>
+                    <a href="#team" class="hover:text-defi-accent transition-colors py-2">Team</a>
+                    <a href="#testimonials" class="hover:text-defi-accent transition-colors py-2">Testimonials</a>
+                    <a href="#faq" class="hover:text-defi-accent transition-colors py-2">FAQ</a>
                     <div class="pt-4 border-t border-defi-accent/20">
-                        <button onclick="openAuthModal('login')" class="w-full text-left py-2 hover:text-defi-accent">Login</button>
-                        <button onclick="handleSignupAttempt()" class="w-full text-left py-2 hover:text-defi-accent">Sign Up</button>
+                        <button id="mobile-logout" class="w-full text-left py-2 text-red-400 hover:text-red-300">Logout</button>
                     </div>
+                </div>
+                <div id="mobile-auth-buttons" class="flex flex-col space-y-3">
+                    <button id="mobile-login-btn" class="border border-defi-accent text-defi-accent hover:bg-defi-accent/10 py-2 rounded-lg">Login</button>
+                    <button id="mobile-signup-btn" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-2 rounded-lg">Sign Up</button>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Login Modal (email/password with show/hide) -->
-    <div id="login-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-defi-card rounded-xl border border-defi-accent/20 w-full max-w-md relative">
-            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-defi-muted hover:text-white">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-
-            <div class="p-6">
-                <h3 class="font-orbitron text-xl font-bold mb-6 text-center">Login to Your Account</h3>
-                <form id="loginForm" onsubmit="handleLogin(event)">
-                    <div class="mb-4">
-                        <label class="block text-defi-muted mb-2">Email</label>
-                        <input type="email" id="loginEmail" required 
-                            class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent">
-                    </div>
-                    <div class="mb-6 relative">
-                        <label class="block text-defi-muted mb-2">Password</label>
-                        <input type="password" id="loginPassword" required 
-                            class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent pr-12">
-                        <button type="button" onclick="togglePasswordVisibility('loginPassword', this)" class="absolute right-3 bottom-3 text-defi-muted hover:text-defi-accent">
-                            <i class="far fa-eye"></i>
-                        </button>
-                    </div>
-                    <div id="loginError" class="mb-4 text-red-400 text-sm text-center hidden">
-                        <i class="fas fa-exclamation-circle mr-1"></i> Wrong login details
-                    </div>
-                    <button type="submit" class="w-full bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-lg transition-colors">
-                        Login
-                    </button>
-                </form>
-                <p class="text-defi-muted text-center mt-4">
-                    Don't have an account? <button onclick="handleSignupAttempt()" class="text-defi-accent hover:underline">Sign Up</button>
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Signup response toast (non-modal, just a small popup) -->
-    <div id="signup-toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-defi-card border border-defi-accent/20 text-defi-muted px-6 py-3 rounded-lg shadow-lg z-50 hidden items-center space-x-3">
-        <i class="fas fa-globe text-defi-accent"></i>
-        <span>we no longer serve clients in your geolocation</span>
-    </div>
-
-    <main class="relative z-10 container mx-auto px-4 py-8">
-        <!-- Hero Section (clean, no dashboard numbers) -->
+    <!-- Main Content -->
+    <main class="relative z-10 container mx-auto px-4 py-8 section-padding">
+        <!-- Hero Section (always visible) -->
         <section class="text-center py-16 mb-8">
-            <h1 class="font-orbitron text-4xl md:text-6xl font-bold mb-6">Yield <span class="text-defi-accent">Farming Reinvented</span> </h1>
-            <p class="text-defi-muted text-xl max-w-2xl mx-auto mb-8">Earn 30% to 200% APY on your USDT deposits. The future of decentralized finance is here.</p>
+            <h1 class="font-orbitron text-4xl md:text-6xl font-bold mb-6 hero-title">Yield <span class="text-defi-accent">Farming</span> Reinvented</h1>
+            <p class="text-defi-muted text-lg md:text-xl max-w-2xl mx-auto mb-8">Earn 30% to 200% APY on your USDT deposits. The future of decentralized finance is here.</p>
             <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="#about" class="border border-defi-accent text-defi-accent hover:bg-defi-accent/10 font-bold py-3 px-8 rounded-lg transition-colors">Learn More</a>
+                <button id="hero-invest-btn" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-8 rounded-lg transition-colors text-center">Start Earning Now</button>
+                <a href="#about" class="border border-defi-accent text-defi-accent hover:bg-defi-accent/10 font-bold py-3 px-8 rounded-lg transition-colors text-center">Learn More</a>
             </div>
         </section>
 
-        <!-- About Section (cleaned, no investment dashboard) -->
+        <!-- Protected Content (shown only when logged in) -->
+        <div id="protected-content" class="hidden">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="mb-16">
+                <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">Investment Dashboard</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-defi-muted">Total Investment</p>
+                                <p class="text-3xl font-bold mt-2" id="balance-display">0.000 USDT</p>
+                            </div>
+                            <i class="fas fa-wallet text-defi-accent text-2xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-defi-muted">Active Investments</p>
+                                <p class="text-3xl font-bold mt-2" id="investments-display">0</p>
+                            </div>
+                            <i class="fas fa-chart-line text-defi-accent text-2xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-defi-muted">Total Earnings</p>
+                                <p class="text-3xl font-bold mt-2" id="earnings-display">0.000 USDT</p>
+                            </div>
+                            <i class="fas fa-coins text-defi-accent text-2xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-defi-muted">Total Balance</p>
+                                <p class="text-3xl font-bold mt-2" id="total-balance-display">0.000 USDT</p>
+                                <p class="text-sm text-defi-accent mt-1" id="balance-breakdown"></p>
+                            </div>
+                            <i class="fas fa-chart-pie text-defi-accent text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Earnings Chart -->
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                    <h3 class="font-orbitron text-xl font-bold mb-6">Weekly Earnings Projection</h3>
+                    <div class="h-64">
+                        <canvas id="earnings-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Investment Calculator & Form -->
+            <section id="invest" class="mb-16">
+                <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">Start Earning Today</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                        <h3 class="font-orbitron text-xl font-bold mb-6">Investment Calculator</h3>
+                        <div class="mb-6">
+                            <label class="block text-defi-muted mb-2">Deposit Amount (USDT)</label>
+                            <input type="number" id="amount" min="500" max="1000000" value="5000" class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent">
+                            <p class="text-defi-muted text-sm mt-2">Minimum: 500 USDT. Maximum: 1,000,000 USDT</p>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-defi-muted mb-2">Lock Period: <span id="termValue">12</span> months</label>
+                            <input type="range" id="term" min="3" max="24" value="12" class="w-full h-2 bg-defi-darker rounded-lg appearance-none cursor-pointer">
+                            <div class="flex justify-between text-defi-muted text-sm mt-2">
+                                <span>3 months</span>
+                                <span>24 months</span>
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-defi-muted mb-2">Compounding</label>
+                            <select id="compound" class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent">
+                                <option value="monthly">Monthly Compounding</option>
+                                <option value="none">Simple Interest</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <button id="calculate-btn" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-lg transition-colors">Calculate</button>
+                            <button id="reset-btn" class="bg-defi-darker hover:bg-defi-darker/80 border border-defi-accent/20 font-bold py-3 px-4 rounded-lg transition-colors">Reset</button>
+                        </div>
+                        <div id="result" class="bg-defi-darker/60 p-4 rounded-lg border border-defi-accent/20">
+                            <p class="text-defi-muted text-center">Enter your investment details to see projected returns</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                        <h3 class="font-orbitron text-xl font-bold mb-6">Make a Deposit</h3>
+                        <div class="mb-6">
+                            <label class="block text-defi-muted mb-2">Selected Amount (USDT)</label>
+                            <input type="text" id="selected-amount" readonly class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-defi-muted">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-defi-muted mb-2">Selected Lock Period</label>
+                            <input type="text" id="selected-term" readonly class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-defi-muted">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-defi-muted mb-2">Deposit Wallet Address</label>
+                            <div class="flex">
+                                <input type="text" id="wallet-address" value="0x9135673CBAB3ffab1535DDfaD2FF6e64146b47C7" readonly class="flex-grow bg-defi-darker border border-defi-accent/20 rounded-l-lg py-3 px-4 text-defi-muted text-xs md:text-base truncate">
+                                <button id="copy-address" class="bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-r-lg transition-colors whitespace-nowrap">Copy</button>
+                            </div>
+                            <p class="text-defi-muted text-sm mt-2">Send only USDT (BEP-20) to this address</p>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-defi-muted mb-2">Transaction Hash</label>
+                            <input type="text" id="tx-hash" placeholder="Enter your transaction hash" class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-defi-accent">
+                        </div>
+                        <button id="submit-tx" class="w-full bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 px-4 rounded-lg transition-colors mb-4">Submit Transaction</button>
+                        <div id="success-message" class="hidden bg-defi-accent/20 border border-defi-accent text-defi-accent p-4 rounded-lg text-center">
+                            <i class="fas fa-check-circle mr-2"></i> Transaction confirmed! Your account has been credited.
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- About Section (public) -->
         <section id="about" class="mb-16">
             <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">About YieldFarm</h2>
-            <div class="bg-defi-card p-8 rounded-xl border border-defi-accent/20">
+            <div class="bg-defi-card p-6 md:p-8 rounded-xl border border-defi-accent/20">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                     <div>
                         <h3 class="font-orbitron text-2xl font-bold mb-6 text-defi-accent">Pioneering DeFi Since 2017</h3>
-                        <p class="text-defi-muted mb-6 text-lg leading-relaxed">
-                            YieldFarm Platform was established in 2017 as one of the pioneering yield farming protocols in the decentralized finance space. 
-                            Our vision has always been to democratize access to high-yield investment opportunities.
-                        </p>
-                        <p class="text-defi-muted mb-6 text-lg leading-relaxed">
-                            Backed by industry leaders, we have built a robust infrastructure that turns your USDT investments into exceptional returns.
-                        </p>
+                        <p class="text-defi-muted mb-6 text-lg leading-relaxed">YieldFarm Platform was established in 2017 as one of the pioneering yield farming protocols in the decentralized finance space. Backed by industry leaders including Binance, KuCoin, Bitget, Gate.io, MEXC, OKX, and ByBit, we have built a robust infrastructure that turns your USDT investments into exceptional returns.</p>
                         <div class="flex flex-wrap gap-4 mt-8">
                             <div class="bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20">
                                 <span class="text-defi-accent font-bold">$500M+</span>
@@ -205,6 +331,10 @@
                             <div class="bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20">
                                 <span class="text-defi-accent font-bold">50K+</span>
                                 <p class="text-defi-muted text-sm">Active Farmers</p>
+                            </div>
+                            <div class="bg-defi-darker/60 px-4 py-2 rounded-lg border border-defi-accent/20">
+                                <span class="text-defi-accent font-bold">2017</span>
+                                <p class="text-defi-muted text-sm">Established</p>
                             </div>
                         </div>
                     </div>
@@ -217,11 +347,30 @@
             </div>
         </section>
 
-        <!-- Team Section (shortened, but kept for aesthetics) -->
+        <!-- Testimonials, Team, FAQ Sections (public) -->
+        <section id="testimonials" class="mb-16">
+            <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">What Our Farmers Say</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                    <div class="flex items-center mb-4">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" alt="Alex Johnson" class="w-12 h-12 rounded-full mr-4">
+                        <div><h4 class="font-bold">Alex Johnson</h4><p class="text-defi-muted text-sm">Crypto Investor</p></div>
+                    </div>
+                    <p class="text-defi-muted">"Earned over 120% APY on my 18-month lock. The platform is smooth and reliable."</p>
+                </div>
+                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20">
+                    <div class="flex items-center mb-4">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt="Marcus Rodriguez" class="w-12 h-12 rounded-full mr-4">
+                        <div><h4 class="font-bold">Marcus Rodriguez</h4><p class="text-defi-muted text-sm">Blockchain Developer</p></div>
+                    </div>
+                    <p class="text-defi-muted">"The UI is intuitive and the returns are impressive. I've recommended this to all my crypto friends."</p>
+                </div>
+            </div>
+        </section>
+
         <section id="team" class="mb-16">
             <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">Our DeFi Experts</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Team Member 1 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20 text-center">
                     <div class="w-32 h-32 mx-auto mb-4 bg-defi-darker rounded-full overflow-hidden border-2 border-defi-accent/30">
                         <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=face" alt="Dr. Elena Petrova" class="w-full h-full object-cover">
@@ -229,165 +378,247 @@
                     <h3 class="font-orbitron text-xl font-bold mb-2">Dr. Elena Petrova</h3>
                     <p class="text-defi-accent mb-4">Chief Blockchain Architect</p>
                 </div>
-                <!-- Team Member 2 -->
-                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20 text-center">
-                    <div class="w-32 h-32 mx-auto mb-4 bg-defi-darker rounded-full overflow-hidden border-2 border-defi-accent/30">
-                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face" alt="James O'Connell" class="w-full h-full object-cover">
-                    </div>
-                    <h3 class="font-orbitron text-xl font-bold mb-2">James O'Connell</h3>
-                    <p class="text-defi-accent mb-4">DeFi Strategy Lead</p>
-                </div>
-                <!-- Team Member 3 -->
-                <div class="bg-defi-card p-6 rounded-xl border border-defi-accent/20 text-center">
-                    <div class="w-32 h-32 mx-auto mb-4 bg-defi-darker rounded-full overflow-hidden border-2 border-defi-accent/30">
-                        <img src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=200&h=200&fit=crop&crop=face" alt="Sophie Reynolds" class="w-full h-full object-cover">
-                    </div>
-                    <h3 class="font-orbitron text-xl font-bold mb-2">Sophie Reynolds</h3>
-                    <p class="text-defi-accent mb-4">Head of Security</p>
-                </div>
             </div>
         </section>
 
-        <!-- FAQ Section (minimal, functional) -->
         <section id="faq" class="mb-16">
             <h2 class="font-orbitron text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
             <div class="max-w-3xl mx-auto">
-                <!-- FAQ Item 1 -->
                 <div class="mb-4 border border-defi-accent/20 rounded-lg">
-                    <button class="faq-question w-full text-left p-4 bg-defi-card hover:bg-defi-card/80 rounded-lg transition-colors">
-                        <span class="font-bold">How are such high APY returns possible?</span>
-                        <i class="fas fa-chevron-down float-right"></i>
-                    </button>
-                    <div class="faq-answer p-4 bg-defi-darker/60 hidden">
-                        <p class="text-defi-muted">Our returns are generated through advanced DeFi strategies across multiple protocols including liquidity provision, lending, and yield optimization.</p>
-                    </div>
-                </div>
-                <!-- FAQ Item 2 -->
-                <div class="mb-4 border border-defi-accent/20 rounded-lg">
-                    <button class="faq-question w-full text-left p-4 bg-defi-card hover:bg-defi-card/80 rounded-lg transition-colors">
-                        <span class="font-bold">Is there any risk to my investment?</span>
-                        <i class="fas fa-chevron-down float-right"></i>
-                    </button>
-                    <div class="faq-answer p-4 bg-defi-darker/60 hidden">
-                        <p class="text-defi-muted">All DeFi investments carry some risk including smart contract vulnerability and market volatility. We implement multiple security measures.</p>
-                    </div>
+                    <button class="faq-question w-full text-left p-4 bg-defi-card hover:bg-defi-card/80 rounded-lg transition-colors"><span class="font-bold">How are such high APY returns possible?</span><i class="fas fa-chevron-down float-right"></i></button>
+                    <div class="faq-answer p-4 bg-defi-darker/60 hidden"><p class="text-defi-muted">Our returns are generated through advanced DeFi strategies across multiple protocols.</p></div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
     <footer class="relative z-10 bg-defi-card border-t border-defi-accent/20 py-8">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="flex items-center space-x-2 mb-4 md:mb-0">
-                    <i class="fas fa-seedling text-defi-accent text-2xl"></i>
-                    <span class="font-orbitron text-xl font-bold">YieldFarm</span>
-                </div>
-                <div class="text-defi-muted text-center md:text-right">
-                    <p>&copy; 2017-2026 YieldFarm LLC. All rights reserved.</p>
-                    <p class="text-sm mt-2">Built for yield farmers worldwide</p>
-                </div>
+                <div class="flex items-center space-x-2 mb-4 md:mb-0"><i class="fas fa-seedling text-defi-accent text-2xl"></i><span class="font-orbitron text-xl font-bold">YieldFarm</span></div>
+                <div class="text-defi-muted text-center md:text-right"><p>&copy; 2017-2026 YieldFarm Group. All rights reserved.</p></div>
             </div>
         </div>
     </footer>
 
-    <!-- JavaScript: all functionality -->
+    <!-- Auth Modals -->
+    <div id="login-modal" class="modal fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 opacity-0 invisible transition-all">
+        <div class="bg-defi-card rounded-2xl p-8 w-full max-w-md border border-defi-accent/20">
+            <div class="flex justify-between items-center mb-6"><h2 class="font-orbitron text-2xl font-bold">Login</h2><button class="close-modal text-defi-muted hover:text-white">&times;</button></div>
+            <input type="email" id="login-email" placeholder="Email" class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 mb-4 text-white">
+            <input type="password" id="login-password" placeholder="Password" class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 mb-6 text-white">
+            <button id="do-login" class="w-full bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 rounded-lg">Login</button>
+            <p class="text-center text-defi-muted mt-4">No account? <button id="switch-to-signup" class="text-defi-accent">Sign Up</button></p>
+        </div>
+    </div>
+
+    <div id="signup-modal" class="modal fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 opacity-0 invisible transition-all">
+        <div class="bg-defi-card rounded-2xl p-8 w-full max-w-md border border-defi-accent/20">
+            <div class="flex justify-between items-center mb-6"><h2 class="font-orbitron text-2xl font-bold">Sign Up</h2><button class="close-modal text-defi-muted hover:text-white">&times;</button></div>
+            <input type="email" id="signup-email" placeholder="Email" class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 mb-4 text-white">
+            <input type="password" id="signup-password" placeholder="Password (min 6 chars)" class="w-full bg-defi-darker border border-defi-accent/20 rounded-lg py-3 px-4 mb-6 text-white">
+            <button id="do-signup" class="w-full bg-defi-accent hover:bg-defi-accent-hover text-defi-darker font-bold py-3 rounded-lg">Create Account</button>
+            <p class="text-center text-defi-muted mt-4">Already have an account? <button id="switch-to-login" class="text-defi-accent">Login</button></p>
+        </div>
+    </div>
+
     <script>
-        // ========== UI Helpers ==========
-        function togglePasswordVisibility(inputId, btn) {
-            const input = document.getElementById(inputId);
-            const icon = btn.querySelector('i');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
+        // Full Stack Authentication & State Management
+        let currentUser = null;
+        let userInvestments = {}; // { email: { totalInvestment, earnings, activeInvestments, transactions } }
+        let earningsChart = null;
+
+        // Load users from localStorage
+        function loadUsers() {
+            const users = localStorage.getItem('yieldfarm_users');
+            if (!users) {
+                const defaultUsers = {
+                    'demo@yieldfarm.com': { password: 'demo123', totalInvestment: 570000, earnings: 685000, activeInvestments: 1, transactions: [] }
+                };
+                localStorage.setItem('yieldfarm_users', JSON.stringify(defaultUsers));
+                return defaultUsers;
+            }
+            return JSON.parse(users);
+        }
+
+        function saveUsers(users) { localStorage.setItem('yieldfarm_users', JSON.stringify(users)); }
+
+        function getUserData(email) {
+            const users = loadUsers();
+            if (users[email]) return users[email];
+            return { password: '', totalInvestment: 0, earnings: 0, activeInvestments: 0, transactions: [] };
+        }
+
+        function updateUserData(email, data) {
+            const users = loadUsers();
+            if (users[email]) { Object.assign(users[email], data); saveUsers(users); }
+        }
+
+        function updateDashboard() {
+            if (!currentUser) return;
+            const userData = getUserData(currentUser);
+            const totalInv = userData.totalInvestment || 0;
+            const earnings = userData.earnings || 0;
+            const activeInv = userData.activeInvestments || 0;
+            document.getElementById('balance-display').textContent = totalInv.toFixed(3) + ' USDT';
+            document.getElementById('earnings-display').textContent = earnings.toFixed(3) + ' USDT';
+            document.getElementById('investments-display').textContent = activeInv;
+            document.getElementById('total-balance-display').textContent = (totalInv + earnings).toFixed(3) + ' USDT';
+            document.getElementById('balance-breakdown').textContent = `${totalInv.toFixed(3)} + ${earnings.toFixed(3)}`;
+            updateChart();
+        }
+
+        function updateChart() {
+            if (!currentUser) return;
+            const userData = getUserData(currentUser);
+            const totalInv = userData.totalInvestment || 0;
+            const earnings = userData.earnings || 0;
+            const weeklyData = [earnings * 0.1, earnings * 0.15, earnings * 0.2, earnings * 0.25, earnings * 0.3, earnings * 0.35, earnings * 0.4];
+            const ctx = document.getElementById('earnings-chart').getContext('2d');
+            if (earningsChart) earningsChart.destroy();
+            earningsChart = new Chart(ctx, { type: 'line', data: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'], datasets: [{ label: 'Projected Earnings (USDT)', data: weeklyData, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.4, fill: true }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#94a3b8' } } } } });
+        }
+
+        function setAuthUI(loggedIn) {
+            const authButtons = document.getElementById('auth-buttons');
+            const userSection = document.getElementById('user-section');
+            const desktopNav = document.getElementById('desktop-nav');
+            const protectedContent = document.getElementById('protected-content');
+            const mobileNavLinks = document.getElementById('mobile-nav-links');
+            const mobileAuthButtons = document.getElementById('mobile-auth-buttons');
+            if (loggedIn && currentUser) {
+                authButtons.classList.add('hidden');
+                userSection.classList.remove('hidden');
+                desktopNav.classList.remove('hidden');
+                protectedContent.classList.remove('hidden');
+                mobileNavLinks.classList.remove('hidden');
+                mobileAuthButtons.classList.add('hidden');
+                document.getElementById('user-email-display').textContent = currentUser;
+                document.getElementById('dropdown-email').textContent = currentUser;
+                updateDashboard();
             } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
+                authButtons.classList.remove('hidden');
+                userSection.classList.add('hidden');
+                desktopNav.classList.add('hidden');
+                protectedContent.classList.add('hidden');
+                mobileNavLinks.classList.add('hidden');
+                mobileAuthButtons.classList.remove('hidden');
+                currentUser = null;
             }
         }
 
-        // ========== Login Modal ==========
-        const loginModal = document.getElementById('login-modal');
-        const loginError = document.getElementById('loginError');
-
-        function openAuthModal(type) {
-            if (type === 'login') {
-                loginModal.classList.remove('hidden');
-                // reset fields and error
-                document.getElementById('loginForm').reset();
-                loginError.classList.add('hidden');
+        function login(email, password) {
+            const users = loadUsers();
+            if (users[email] && users[email].password === password) {
+                currentUser = email;
+                setAuthUI(true);
+                closeModals();
+                return true;
             }
+            alert('Invalid email or password');
+            return false;
         }
 
-        function closeLoginModal() {
-            loginModal.classList.add('hidden');
+        function signup(email, password) {
+            if (password.length < 6) { alert('Password must be at least 6 characters'); return false; }
+            const users = loadUsers();
+            if (users[email]) { alert('Email already registered'); return false; }
+            users[email] = { password: password, totalInvestment: 0, earnings: 0, activeInvestments: 0, transactions: [] };
+            saveUsers(users);
+            currentUser = email;
+            setAuthUI(true);
+            closeModals();
+            return true;
         }
 
-        // Handle login: always show error
-        function handleLogin(event) {
-            event.preventDefault();
-            // Show error message (always wrong)
-            loginError.classList.remove('hidden');
-            // Optional: clear password field? not necessary, but keep it
-        }
+        function logout() { currentUser = null; setAuthUI(false); }
 
-        // ========== Signup ==========
-        const signupToast = document.getElementById('signup-toast');
-        let toastTimeout;
+        // Modal handling
+        let activeModal = null;
+        function showModal(id) { closeModals(); activeModal = document.getElementById(id); activeModal.classList.remove('opacity-0', 'invisible'); activeModal.classList.add('opacity-100', 'visible'); }
+        function closeModals() { document.querySelectorAll('.modal').forEach(m => { m.classList.add('opacity-0', 'invisible'); m.classList.remove('opacity-100', 'visible'); }); activeModal = null; }
 
-        function handleSignupAttempt() {
-            // Close login modal if open
-            loginModal.classList.add('hidden');
-            
-            // Show toast
-            signupToast.classList.remove('hidden');
-            
-            // Hide after 3 seconds
-            if (toastTimeout) clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                signupToast.classList.add('hidden');
-            }, 3000);
-        }
+        // Event Listeners
+        document.getElementById('login-btn-header').onclick = () => showModal('login-modal');
+        document.getElementById('signup-btn-header').onclick = () => showModal('signup-modal');
+        document.getElementById('mobile-login-btn').onclick = () => showModal('login-modal');
+        document.getElementById('mobile-signup-btn').onclick = () => showModal('signup-modal');
+        document.getElementById('hero-invest-btn').onclick = () => { if (currentUser) document.getElementById('invest').scrollIntoView({ behavior: 'smooth' }); else showModal('login-modal'); };
+        document.querySelectorAll('.close-modal').forEach(btn => btn.onclick = closeModals);
+        document.getElementById('switch-to-signup').onclick = () => { closeModals(); showModal('signup-modal'); };
+        document.getElementById('switch-to-login').onclick = () => { closeModals(); showModal('login-modal'); };
+        document.getElementById('do-login').onclick = () => login(document.getElementById('login-email').value, document.getElementById('login-password').value);
+        document.getElementById('do-signup').onclick = () => signup(document.getElementById('signup-email').value, document.getElementById('signup-password').value);
+        document.getElementById('logout-btn').onclick = () => logout();
+        document.getElementById('mobile-logout').onclick = () => logout();
 
-        // ========== Mobile Menu Toggle ==========
-        const mobileMenuBtn = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+        // Investment calculator
+        document.getElementById('term').addEventListener('input', function() { document.getElementById('termValue').textContent = this.value; });
+        document.getElementById('calculate-btn').addEventListener('click', function() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const term = parseInt(document.getElementById('term').value);
+            const compound = document.getElementById('compound').value;
+            const apy = 30 + (term - 3) * 7.4;
+            let total = compound === 'monthly' ? amount * Math.pow(1 + (apy / 12 / 100), term) : amount * (1 + (apy / 100) * (term / 12));
+            const earnings = total - amount;
+            document.getElementById('result').innerHTML = `<div class="text-center"><p class="text-defi-muted mb-2">Projected Returns for ${term} months</p><p class="text-2xl font-bold text-defi-accent mb-2">${total.toFixed(2)} USDT</p><p class="text-defi-muted">Total Earnings: <span class="text-defi-accent">${earnings.toFixed(2)} USDT</span></p><p class="text-defi-muted text-sm mt-2">APY: ${apy.toFixed(1)}%</p></div>`;
+            document.getElementById('selected-amount').value = amount + ' USDT';
+            document.getElementById('selected-term').value = term + ' months';
+        });
+        document.getElementById('reset-btn').addEventListener('click', function() {
+            document.getElementById('amount').value = 5000;
+            document.getElementById('term').value = 12;
+            document.getElementById('termValue').textContent = 12;
+            document.getElementById('compound').value = 'monthly';
+            document.getElementById('result').innerHTML = '<p class="text-defi-muted text-center">Enter your investment details to see projected returns</p>';
+            document.getElementById('selected-amount').value = '';
+            document.getElementById('selected-term').value = '';
+        });
+        document.getElementById('copy-address').addEventListener('click', function() {
+            const address = document.getElementById('wallet-address');
+            address.select();
+            document.execCommand('copy');
+            const originalText = this.textContent;
+            this.textContent = 'Copied!';
+            setTimeout(() => { this.textContent = originalText; }, 2000);
+        });
+        document.getElementById('submit-tx').addEventListener('click', function() {
+            const txHash = document.getElementById('tx-hash').value;
+            if (txHash.trim() === '') { alert('Please enter a transaction hash'); return; }
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (currentUser && amount >= 500) {
+                const userData = getUserData(currentUser);
+                userData.totalInvestment = (userData.totalInvestment || 0) + amount;
+                userData.activeInvestments = (userData.activeInvestments || 0) + 1;
+                updateUserData(currentUser, { totalInvestment: userData.totalInvestment, activeInvestments: userData.activeInvestments });
+                updateDashboard();
+                document.getElementById('success-message').classList.remove('hidden');
+                setTimeout(() => { document.getElementById('tx-hash').value = ''; document.getElementById('success-message').classList.add('hidden'); }, 3000);
+            } else { alert('Please login and enter a valid amount (min 500 USDT)'); }
         });
 
-        // ========== FAQ Accordion ==========
-        document.querySelectorAll('.faq-question').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const answer = this.nextElementSibling;
-                const icon = this.querySelector('i');
+        // FAQ toggle
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const answer = button.nextElementSibling;
+                const icon = button.querySelector('i');
                 answer.classList.toggle('hidden');
                 icon.classList.toggle('fa-chevron-down');
                 icon.classList.toggle('fa-chevron-up');
             });
         });
 
-        // ========== Remove all dashboard / investment / calculator elements ==========
-        // Additionally, ensure any leftover dynamic IDs are not referenced.
-        // The HTML above has been stripped of dashboard and investment sections.
-        // Also remove any potential user section leftovers: we don't have them.
-        // Just to be safe, if any script tries to access those elements, we ignore.
-        // No investment logic is included.
-        
-        // Close modal if clicked outside? optional.
-        window.addEventListener('click', (e) => {
-            if (e.target === loginModal) {
-                closeLoginModal();
-            }
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() { document.getElementById('mobile-menu').classList.toggle('hidden'); });
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profile-dropdown');
+            const button = document.getElementById('profile-dropdown-button');
+            if (button && dropdown && !button.contains(event.target) && !dropdown.contains(event.target)) dropdown.classList.add('hidden');
         });
+        document.getElementById('profile-dropdown-button')?.addEventListener('click', function() { document.getElementById('profile-dropdown').classList.toggle('hidden'); });
 
-        // Override any stray onclick that might reference removed functions (like showAuthModal)
-        // We already replaced them with openAuthModal and handleSignupAttempt.
-        // Also ensure no old references.
-        window.showAuthModal = undefined; // just in case
+        // Initial load
+        setAuthUI(false);
     </script>
 </body>
 </html>
